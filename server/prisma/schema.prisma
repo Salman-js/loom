@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  Male
+  Female
+}
+
+model User {
+  id           String         @id @default(uuid())
+  email        String         @unique
+  firstName    String         @map("first_name")
+  lastName     String?        @map("last_name")
+  password     String
+  gender       Gender
+  books        Book[]         @relation("books")
+  refreshToken RefreshToken[] @relation("refresh_token")
+  createdAt    DateTime       @default(now()) @map("created_at")
+
+  @@index([email, createdAt])
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  user      User     @relation("refresh_token", fields: [userId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  expiresAt DateTime @map("expires_at")
+
+  @@map("refresh_tokens")
+}
+
+model Book {
+  id      String @id @default(uuid())
+  title   String
+  userId  String @map("user_id")
+  user    User   @relation("books", fields: [userId], references: [id])
+  cover   Cover? @relation("cover", fields: [coverId], references: [id])
+  coverId String @unique
+  epub    Epub?  @relation("epub", fields: [epubId], references: [id])
+  epubId  String @unique
+
+  @@map("books")
+}
+
+model Epub {
+  id        String   @id @default(uuid())
+  fileName  String
+  filePath  String
+  fileSize  String?
+  mimeType  String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  book      Book?    @relation("epub")
+
+  @@map("epubs")
+}
+
+model Cover {
+  id        String   @id @default(uuid())
+  fileName  String   @map("file_name")
+  filePath  String   @map("file_path")
+  fileSize  String?  @map("file_size")
+  mimeType  String?  @map("mime_type")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  book      Book?    @relation("cover")
+
+  @@map("images")
+}
