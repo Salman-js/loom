@@ -10,7 +10,7 @@ export default function Home() {
         searchText={searchText}
         onSearchTextChange={(value) => setSearchText(value)}
       />
-      <div className='page-container'>
+      <div className='page-container bg-white'>
         <Books searchText={searchText} />
       </div>
     </div>

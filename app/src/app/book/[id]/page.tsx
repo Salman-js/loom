@@ -5,6 +5,7 @@ import React from 'react';
 import dayjs from 'dayjs';
 import { Button } from '@/components/ui/button';
 import BookDescription from '@/components/book/BookDescription';
+import AddToShelfButton from '@/components/home/ui/add-to-shelf';
 
 export default async function Page({
   params,
@@ -19,8 +20,8 @@ export default async function Page({
       <Header />
       <div className='page-container'>
         <div className='w-full flex flex-row justify-start items-center p-10 px-20 gap-8'>
-          <div className='w-2/5 p-14 bg-muted rounded-3xl'>
-            <div className='w-full shadow-lg rounded-3xl overflow-hidden'>
+          <div className='w-2/5 p-14 bg-muted'>
+            <div className='w-full shadow-lg overflow-hidden'>
               <img
                 src={book?.image as string}
                 alt={book?.title as string}
@@ -54,9 +55,7 @@ export default async function Page({
               <Button>
                 <BookOpenText /> Read
               </Button>
-              <Button variant='outline'>
-                <Bookmark /> Add to Favorites
-              </Button>
+              <AddToShelfButton id={id} />
             </div>
             <div className='mt-3'>
               {book && (

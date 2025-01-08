@@ -103,7 +103,7 @@ const PopoverTrigger = React.forwardRef<HTMLButtonElement, PopoverTriggerProps>(
         >
           <motion.span
             layoutId={`popover-label-${uniqueId}`}
-            className='text-sm'
+            className='text-sm flex flex-row items-center justify-center'
           >
             {children}
           </motion.span>

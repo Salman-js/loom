@@ -1,7 +1,7 @@
 import { IBook } from '@/interface/book.interface';
 import React from 'react';
-import FavoriteButton from './FavouriteButton';
 import Link from 'next/link';
+import AddToShelfButton from './add-to-shelf';
 
 type BookCardProps = {
   book: IBook;
@@ -27,7 +27,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
               {book.description}
             </p>
           </div>
-          <FavoriteButton id={book.id.toString()} />
+          <AddToShelfButton id={book.id.toString()} mini />
         </div>
       </div>
     </div>

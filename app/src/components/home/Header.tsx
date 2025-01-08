@@ -11,6 +11,9 @@ type HeaderProps = {
 const Header: React.FC<HeaderProps> = ({ searchText, onSearchTextChange }) => {
   return (
     <div className='main-header justify-end'>
+      <div className='lg:hidden block'>
+        <SidebarTrigger />
+      </div>
       <div className='header-controls-container w-full justify-end'>
         <Input
           placeholder='Search...'

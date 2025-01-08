@@ -24,14 +24,16 @@ export default function BookDescription({
   return (
     <p className='text-lg text-foreground'>
       {isExpanded ? descriptionContent : truncatedDescription}
-      <Button
-        onClick={toggleContent}
-        size='sm'
-        variant='link'
-        className='text-primary'
-      >
-        {isExpanded ? 'Read Less' : 'Read More'}
-      </Button>
+      {descriptionContent.length > maxLength && (
+        <Button
+          onClick={toggleContent}
+          size='sm'
+          variant='link'
+          className='text-primary'
+        >
+          {isExpanded ? 'Read Less' : 'Read More'}
+        </Button>
+      )}
     </p>
   );
 }

@@ -1,11 +1,8 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
+import Wrapper from '../components/wrapper';
 import { ThemeProvider } from '@/components/theme-provider';
-import { Toaster } from '@/components/ui/toaster';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import SidebarContainer from './ui/sidebar.container';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -22,7 +19,6 @@ export const metadata: Metadata = {
   description: 'bookshelf',
 };
 
-const queryClient = new QueryClient();
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -34,15 +30,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider attribute='class' enableSystem disableTransitionOnChange>
-          <SidebarProvider>
-            <SidebarContainer />
-            <SidebarInset>
-              <QueryClientProvider client={queryClient}>
-                {children}
-              </QueryClientProvider>
-            </SidebarInset>
-          </SidebarProvider>
-          <Toaster />
+          <Wrapper>{children}</Wrapper>
         </ThemeProvider>
       </body>
     </html>
