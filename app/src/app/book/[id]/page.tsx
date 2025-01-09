@@ -20,12 +20,12 @@ export default async function Page({
       <Header />
       <div className='page-container'>
         <div className='w-full flex flex-row justify-start items-center p-10 px-20 gap-8'>
-          <div className='w-2/5 p-14 bg-muted'>
-            <div className='w-full shadow-lg overflow-hidden'>
+          <div className='w-1/2 lg:w-[45%] p-14 bg-muted'>
+            <div className='w-full overflow-visible flex flex-row justify-center'>
               <img
                 src={book?.image as string}
                 alt={book?.title as string}
-                className='w-full h-[50vh]'
+                className='w-full lg:max-w-[20em] max-w-[25em] h-[50vh] shadow-lg'
               />
             </div>
           </div>

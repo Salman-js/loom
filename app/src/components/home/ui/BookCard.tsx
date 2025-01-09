@@ -2,15 +2,21 @@ import { IBook } from '@/interface/book.interface';
 import React from 'react';
 import Link from 'next/link';
 import AddToShelfButton from './add-to-shelf';
+import { useSidebar } from '@/components/ui/sidebar';
+import { cn } from '@/lib/utils';
 
 type BookCardProps = {
   book: IBook;
 };
 
 const BookCard: React.FC<BookCardProps> = ({ book }) => {
+  const { state } = useSidebar();
   return (
     <div
-      className='book-card group'
+      className={cn(
+        'book-card group',
+        state === 'expanded' ? 'h-[33em]' : 'h-[30em]'
+      )}
       style={{
         backgroundImage: `url(${book.image})`,
       }}

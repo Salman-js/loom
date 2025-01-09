@@ -7,9 +7,14 @@ import {
   ChevronsUpDown,
   CreditCard,
   Heart,
+  Loader,
+  Loader2,
+  LogIn,
   LogOut,
   Sparkles,
   Target,
+  User,
+  UserPlus,
 } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -28,18 +33,28 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { IUser } from '@/interface/user.interface';
+import { useRouter } from 'next/navigation';
+import { useAuth, useSignOut } from '@/hooks/auth.hooks';
+import { useEffect, useMemo, useState } from 'react';
+import { useSession } from 'next-auth/react';
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
-}) {
+export function NavUser() {
   const { isMobile } = useSidebar();
-
+  const {
+    isPending: isSigningOut,
+    mutate: signUserOut,
+    isSuccess,
+  } = useSignOut();
+  const { data } = useSession();
+  const user = useMemo(() => data?.user, [data]);
+  const { setUser } = useAuth();
+  const router = useRouter();
+  useEffect(() => {
+    if (user) {
+      setUser(user);
+    }
+  }, [user]);
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -50,61 +65,106 @@ export function NavUser({
               className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
             >
               <Avatar className='h-8 w-8 rounded-lg'>
-                <AvatarImage
-                  src='https://avatar.iran.liara.run/public'
-                  alt=''
-                />
-                <AvatarFallback className='rounded-lg'>CN</AvatarFallback>
+                <User />
               </Avatar>
-              <div className='grid flex-1 text-left text-sm leading-tight'>
-                <span className='truncate font-semibold'>{user.name}</span>
-                <span className='truncate text-xs'>{user.email}</span>
-              </div>
+              {user ? (
+                <div className='grid flex-1 text-left text-sm leading-tight'>
+                  <span className='truncate font-semibold'>{user?.name}</span>
+                  <span className='truncate text-xs'>{user?.email}</span>
+                </div>
+              ) : (
+                <span className='truncate font-semibold text-lg'>Guest</span>
+              )}
               <ChevronsUpDown className='ml-auto size-4' />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className='w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg'
-            side={isMobile ? 'bottom' : 'right'}
-            align='end'
-            sideOffset={4}
-          >
-            <DropdownMenuLabel className='p-0 font-normal'>
-              <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
-                <Avatar className='h-8 w-8 rounded-lg'>
-                  <AvatarImage
-                    src='https://avatar.iran.liara.run/public'
-                    alt=''
-                  />
-                  <AvatarFallback className='rounded-lg'>CN</AvatarFallback>
-                </Avatar>
-                <div className='grid flex-1 text-left text-sm leading-tight'>
-                  <span className='truncate font-semibold'>{user.name}</span>
-                  <span className='truncate text-xs'>{user.email}</span>
-                </div>
+          {isSigningOut ? (
+            <DropdownMenuContent
+              className='w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg'
+              side={isMobile ? 'bottom' : 'right'}
+              align='end'
+              sideOffset={4}
+            >
+              <div className='w-full p-20 flex flex-col justify-center items-center'>
+                <Loader2 className='animate-spin' />
               </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Heart />
-                Favorites
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Target />
-                Reading Goal
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut />
-              Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
+            </DropdownMenuContent>
+          ) : (
+            <>
+              {user ? (
+                <DropdownMenuContent
+                  className='w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg'
+                  side={isMobile ? 'bottom' : 'right'}
+                  align='end'
+                  sideOffset={4}
+                >
+                  <DropdownMenuLabel className='p-0 font-normal'>
+                    <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
+                      <Avatar className='h-8 w-8 rounded-lg'>
+                        <User />
+                      </Avatar>
+                      <div className='grid flex-1 text-left text-sm leading-tight'>
+                        <span className='truncate font-semibold'>
+                          {user?.name}
+                        </span>
+                        <span className='truncate text-xs'>{user?.email}</span>
+                      </div>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem>
+                      <BadgeCheck />
+                      Account
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Target />
+                      Reading Goal
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={async () => signUserOut()}>
+                    <LogOut />
+                    Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              ) : (
+                <DropdownMenuContent
+                  className='w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg'
+                  side={isMobile ? 'bottom' : 'right'}
+                  align='end'
+                  sideOffset={4}
+                >
+                  <DropdownMenuLabel className='p-0 font-normal'>
+                    <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
+                      <Avatar className='h-8 w-8 rounded-lg'>
+                        <AvatarImage src='error' alt='' />
+                        <AvatarFallback className='rounded-lg'>
+                          <User />
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className='truncate font-semibold text-lg'>
+                        Guest
+                      </span>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={async () => router.push('/sign-in')}
+                  >
+                    <LogIn />
+                    Sign in
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={async () => router.push('/sign-up')}
+                  >
+                    <UserPlus />
+                    Create account
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              )}
+            </>
+          )}
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>

@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from '../../ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Heart, LibraryBig, Plus, Search, Settings } from 'lucide-react';
-import { books } from '@/lib/constants';
+import { books, shelves } from '@/lib/constants';
 import { useToast } from '@/hooks/use-toast';
 import { ToastAction } from '@radix-ui/react-toast';
 import {
@@ -28,11 +28,6 @@ const AddToShelfButton: React.FC<FavoriteButtonProps> = ({
   const { toast } = useToast();
   const book = books.find((book) => book.id === parseInt(id));
   const [searchQuery, setSearchQuery] = React.useState('');
-  const shelves = [
-    { label: 'Shelf 1', books: 5 },
-    { label: 'Shelf 2', books: 3 },
-    { label: 'Shelf 3', books: 2 },
-  ];
   return (
     <PopoverRoot>
       <PopoverTrigger
@@ -65,25 +60,25 @@ const AddToShelfButton: React.FC<FavoriteButtonProps> = ({
           <div className='p-2'>
             {shelves
               .filter((item) =>
-                item.label.toLowerCase().includes(searchQuery.toLowerCase())
+                item.name.toLowerCase().includes(searchQuery.toLowerCase())
               )
               .map((item) => (
                 <PopoverButton
-                  key={item.label}
-                  onClick={() => console.log(`Clicked: ${item.label}`)}
+                  key={item.name}
+                  onClick={() => console.log(`Clicked: ${item.name}`)}
                   className='relative w-full justify-between px-2 py-1.5 text-sm font-normal'
                 >
-                  <div className='flex items-center gap-3'>
-                    <span>{item.label}</span>
-                    {item.books && (
-                      <Badge
-                        variant='secondary'
-                        className='ml-auto h-5 px-1.5 text-xs'
-                      >
-                        {item.books} books
-                      </Badge>
-                    )}
+                  <div className='flex just items-center gap-3'>
+                    <span>{item.name}</span>
                   </div>
+                  {item.books && (
+                    <Badge
+                      variant='secondary'
+                      className='ml-auto h-5 px-1.5 text-xs'
+                    >
+                      {item.books?.length} books
+                    </Badge>
+                  )}
                 </PopoverButton>
               ))}
           </div>

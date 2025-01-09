@@ -1,3 +1,5 @@
+import { IShelf } from '@/interface/shelf.interface';
+
 export const books = [
   {
     id: 1,
@@ -421,3 +423,9 @@ export const books = [
 export const endpoints = {
   BOOK: 'files/list_folder',
 };
+
+export const shelves: IShelf[] = Array.from({ length: 5 }, (_, i) => ({
+  books: books.filter((book, index) => index <= i),
+  id: i + 1,
+  name: `Shelf ${i + 1}`,
+}));

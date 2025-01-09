@@ -1,17 +1,19 @@
 'use client';
 import Header from '@/components/home/Header';
-import Books from '@/components/home/ui/books';
-import { store } from '@/store/store';
+import Shelves from '@/components/shelf/Shelves';
 import { useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 export default function Home() {
   const [searchText, setSearchText] = useState('');
-  const { data: session } = useSession();
+  const { data } = useSession();
+  const user = useMemo(() => data?.user, [data]);
+  const router = useRouter();
   useEffect(() => {
-    if (session?.user) {
-      store.getState().setUser(session.user);
+    if (!user) {
+      router.replace('/');
     }
-  }, [session]);
+  }, [user]);
   return (
     <div className='w-full'>
       <Header
@@ -19,7 +21,7 @@ export default function Home() {
         onSearchTextChange={(value) => setSearchText(value)}
       />
       <div className='page-container bg-white'>
-        <Books searchText={searchText} />
+        <Shelves searchText={searchText} />
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
 'use client';
-import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import SidebarContainer from '../app/ui/sidebar.container';
@@ -13,8 +12,8 @@ export default function Wrapper({
 }>) {
   return (
     <SidebarProvider>
-      <SidebarContainer />
       <QueryClientProvider client={queryClient}>
+        <SidebarContainer />
         <SidebarInset>{children}</SidebarInset>
       </QueryClientProvider>
       <Toaster />

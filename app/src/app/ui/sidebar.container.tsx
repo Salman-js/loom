@@ -9,6 +9,6 @@ type sidebarContainerProps = {};
 
 const SidebarContainer: React.FC<sidebarContainerProps> = () => {
   const pathname = usePathname();
-  return pathname.includes('sign') ? null : pathname.includes('book') ? <BookSidebar /> : <AppSidebar />;
+  return pathname.includes('read') ? <BookSidebar /> : <AppSidebar />;
 };
 export default SidebarContainer;

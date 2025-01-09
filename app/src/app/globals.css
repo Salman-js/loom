@@ -99,10 +99,10 @@ body {
   @apply w-full flex max-h-[90vh] overflow-auto bg-background;
 }
 .home-main-container {
-  @apply w-full grid grid-cols-1 lg:grid-cols-5 md:grid-cols-2 gap-4 p-10;
+  @apply w-full grid grid-cols-1 gap-4 p-10;
 }
 .book-card {
-  @apply relative rounded-xl bg-cover bg-no-repeat bg-center gap-2 h-[30em] overflow-hidden cursor-pointer;
+  @apply relative rounded-xl bg-cover bg-no-repeat bg-center gap-2 overflow-hidden cursor-pointer;
 }
 
 .card-container {
@@ -121,6 +121,9 @@ body {
   @apply w-4/5;
 }
 
+.shelf-card {
+  @apply gap-2 overflow-hidden cursor-pointer rounded-xl;
+}
 @layer base {
   * {
     @apply border-border;

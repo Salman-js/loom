@@ -3,7 +3,7 @@ import React from 'react';
 
 export default function SignUp() {
   return (
-    <div className='w-full max-w-sm md:max-w-3xl'>
+    <div className='page-container flex flex-col justify-center items-center'>
       <SignUpForm />
     </div>
   );
