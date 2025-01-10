@@ -1,6 +1,6 @@
 'use client';
-import { BookSidebar } from '@/components/book/Sidebar';
-import { AppSidebar } from '@/components/home/Sidebar';
+import { AppSidebar } from '@/components/ui/sidebar/main';
+import { BookSidebar } from '@/features/books/components/Sidebar';
 import { usePathname } from 'next/navigation';
 import path from 'path';
 import React from 'react';

@@ -1,4 +1,4 @@
-import { IBook } from '@/interface/book.interface';
+import { IBook } from '@/features/books/interface/book.interface';
 import { useFetchQuery } from './query.hooks';
 import { endpoints } from '@/lib/constants';
 import { useMemo } from 'react';

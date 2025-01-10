@@ -22,9 +22,9 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import ThemeSelector from './ui/ThemeSelector';
-import FontSelector from './ui/FontSelector';
-import ColorSelector from './ui/ColorSelector';
+import ThemeSelector from '@/components/home/ui/ThemeSelector';
+import FontSelector from '@/components/home/ui/FontSelector';
+import ColorSelector from '@/components/home/ui/ColorSelector';
 
 export function NavMain() {
   const { state, toggleSidebar, isMobile } = useSidebar();

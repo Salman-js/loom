@@ -1,7 +1,6 @@
 import React from 'react';
-import { SidebarTrigger } from '../ui/sidebar';
-import { Input } from '../ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { SidebarTrigger } from '../sidebar';
+import { Input } from '../input';
 
 type HeaderProps = {
   searchText?: string;

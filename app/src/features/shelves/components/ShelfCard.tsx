@@ -1,9 +1,9 @@
 import React from 'react';
 import { useSidebar } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
-import { IShelf } from '@/interface/shelf.interface';
 import Link from 'next/link';
-import { Badge } from '../ui/badge';
+import { Badge } from '../../../components/ui/badge';
+import { IShelf } from '../interface/shelf.interface';
 
 type ShelfCardProps = {
   shelf: IShelf;

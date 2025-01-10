@@ -8,8 +8,8 @@ import {
   PopoverCloseButton,
 } from '@/components/ui/popover';
 import { Pencil, Save } from 'lucide-react';
-import Popover from '../ui/factory/Popover';
-import { Button } from '../ui/button';
+import Popover from '../../../components/ui/factory/Popover';
+import { Button } from '../../../components/ui/button';
 
 export default function HighlightPopover() {
   return (

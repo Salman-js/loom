@@ -9,8 +9,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { SidebarMenuButton } from '../../ui/sidebar';
 import { Album, Plus } from 'lucide-react';
+import { SidebarMenuButton } from '@/components/ui/sidebar';
 
 export function AddBookDialog() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);

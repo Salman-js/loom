@@ -1,4 +1,4 @@
-import { IBook } from './book.interface';
+import { IBook } from '../features/books/interface/book.interface';
 
 export interface INewShelf {
   name: string;

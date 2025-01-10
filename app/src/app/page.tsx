@@ -1,6 +1,6 @@
 'use client';
-import Header from '@/components/home/Header';
-import Books from '@/components/home/ui/books';
+import Header from '@/components/ui/header/main-header';
+import Books from '@/features/books/components/books';
 import { store } from '@/store/store';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';

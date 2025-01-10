@@ -1,8 +1,5 @@
 import React from 'react';
-import { SidebarTrigger } from '../ui/sidebar';
-import { Input } from '../ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { Button } from '../ui/button';
+import { Button } from '../button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 

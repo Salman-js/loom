@@ -1,6 +1,5 @@
 'use client';
 import React from 'react';
-import { Button } from '../../ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Heart, LibraryBig, Plus, Search, Settings } from 'lucide-react';
 import { books, shelves } from '@/lib/constants';
@@ -15,6 +14,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 type FavoriteButtonProps = {
   id: string;
@@ -43,9 +43,10 @@ const AddToShelfButton: React.FC<FavoriteButtonProps> = ({
         {!mini && 'Add to Shelf'}
       </PopoverTrigger>
       <PopoverContent
-        className={
-          mini ? 'p-0 absolute bottom-1/2 right-[1em]' : 'p-0 w-[300px]'
-        }
+        className={cn(
+          'p-0',
+          mini ? 'absolute bottom-1/2 right-[1em]' : 'w-[300px]'
+        )}
       >
         <div className='flex items-center gap-2 border-b px-3 py-2'>
           <Search className='h-4 w-4 text-muted-foreground' />

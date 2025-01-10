@@ -1,4 +1,4 @@
-import { IUser } from '@/interface/user.interface';
+import { IUser } from '@/features/users/interface/user.interface';
 import { createStore } from 'zustand/vanilla';
 import { persist } from 'zustand/middleware';
 type State = {

@@ -16,10 +16,10 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import Image from 'next/image';
-import { AddBookDialog } from './ui/add-book';
 import Link from 'next/link';
 import { Library } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+import { AddBookDialog } from '@/features/books/components/add-book';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data } = useSession();

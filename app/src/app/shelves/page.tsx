@@ -1,6 +1,6 @@
 'use client';
-import Header from '@/components/home/Header';
-import Shelves from '@/components/shelf/Shelves';
+import Header from '@/components/ui/header/main-header';
+import Shelves from '@/features/shelves/components/Shelves';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';

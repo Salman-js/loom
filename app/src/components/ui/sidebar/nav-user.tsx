@@ -33,9 +33,9 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { IUser } from '@/interface/user.interface';
+import { IUser } from '@/features/users/interface/user.interface';
 import { useRouter } from 'next/navigation';
-import { useAuth, useSignOut } from '@/hooks/auth.hooks';
+import { useAuth, useSignOut } from '@/features/auth/hooks/auth.hooks';
 import { useEffect, useMemo, useState } from 'react';
 import { useSession } from 'next-auth/react';
 

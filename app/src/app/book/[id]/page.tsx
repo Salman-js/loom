@@ -1,11 +1,11 @@
-import Header from '@/components/book/Header';
 import { books } from '@/lib/constants';
 import { Bookmark, BookOpenText, Calendar1 } from 'lucide-react';
 import React from 'react';
 import dayjs from 'dayjs';
 import { Button } from '@/components/ui/button';
-import BookDescription from '@/components/book/BookDescription';
-import AddToShelfButton from '@/components/home/ui/add-to-shelf';
+import BookDescription from '@/features/books/components/BookDescription';
+import Header from '@/components/ui/header/book-header';
+import AddToShelfButton from '@/features/shelves/components/add-to-shelf';
 
 export default async function Page({
   params,

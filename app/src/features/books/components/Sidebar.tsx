@@ -30,11 +30,11 @@ import {
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import Link from 'next/link';
-import ThemeSelector from '../home/ui/ThemeSelector';
-import FontSelector from '../home/ui/FontSelector';
-import { NavUser } from '../home/nav-user';
-import { NavMain } from '../home/nav-main';
-import { NavChapters } from '../home/nav.chapters';
+import ThemeSelector from '../../../components/home/ui/ThemeSelector';
+import FontSelector from '../../../components/home/ui/FontSelector';
+import { NavUser } from '../../../components/ui/sidebar/nav-user';
+import { NavChapters } from '../../../components/ui/sidebar/nav.chapters';
+import { NavMain } from '@/components/ui/sidebar/nav-main';
 
 // This is sample data.
 const data = {
@@ -150,7 +150,7 @@ export function BookSidebar({
         <NavChapters chapters={data.chapters} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

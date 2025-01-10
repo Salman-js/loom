@@ -1,4 +1,4 @@
-import Header from '@/components/book/Header';
+import Header from '@/components/ui/header/book-header';
 import React from 'react';
 
 export default async function Page({
