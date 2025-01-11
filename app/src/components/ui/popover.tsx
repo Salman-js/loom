@@ -90,10 +90,13 @@ interface PopoverTriggerProps {
 
 const PopoverTrigger = React.forwardRef<HTMLButtonElement, PopoverTriggerProps>(
   ({ children, className, variant = 'outline', size = 'default' }, ref) => {
-    const { openPopover, uniqueId } = usePopover();
+    const { openPopover, uniqueId, isOpen, closePopover } = usePopover();
 
     return (
-      <motion.div key='button' layoutId={`popover-${uniqueId}`}>
+      <motion.div
+        key='button'
+        // layoutId={`popover-${uniqueId}`}
+      >
         <Button
           ref={ref}
           variant={variant}
@@ -105,7 +108,7 @@ const PopoverTrigger = React.forwardRef<HTMLButtonElement, PopoverTriggerProps>(
           size={size}
         >
           <motion.span
-            layoutId={`popover-label-${uniqueId}`}
+            // layoutId={`popover-label-${uniqueId}`}
             className='text-sm flex flex-row items-center justify-center'
           >
             {children}
@@ -154,7 +157,7 @@ const PopoverContent = React.forwardRef<HTMLDivElement, PopoverContentProps>(
         {isOpen && (
           <motion.div
             ref={contentRef}
-            layoutId={`popover-${uniqueId}`}
+            // layoutId={`popover-${uniqueId}`}
             className={cn(
               'absolute z-50 min-w-[200px] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md outline-none',
               className
@@ -213,7 +216,7 @@ const PopoverLabel = React.forwardRef<HTMLSpanElement, PopoverLabelProps>(
     return (
       <motion.span
         ref={ref}
-        layoutId={`popover-label-${uniqueId}`}
+        // layoutId={`popover-label-${uniqueId}`}
         aria-hidden='true'
         style={{
           opacity: note ? 0 : 1,

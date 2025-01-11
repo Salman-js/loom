@@ -1,19 +1,19 @@
 import { books } from '@/lib/constants';
 import React, { useEffect, useId, useRef, useState } from 'react';
-import BookCard from './BookCard';
 import { useSidebar } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { IBook } from '../interface/book.interface';
 import { useOutsideClick } from '@/hooks/use-outsideClick';
 import { BookOpenText, Calendar1, X } from 'lucide-react';
-import Link from 'next/link';
 import AddToShelfButton from '@/features/shelves/components/add-to-shelf';
 import { Button } from '@/components/ui/button';
 import dayjs from 'dayjs';
 import BookDescription from './BookDescription';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useRouter } from 'next/navigation';
+import AnimatedCircularProgressBar from '@/components/ui/animated-circular-progress-bar';
+import Link from 'next/link';
 
 type booksProps = {
   searchText: string;
@@ -47,6 +47,9 @@ const Books: React.FC<booksProps> = ({ searchText }) => {
   useEffect(() => {
     if (isMobile) setActive(null);
   }, [isMobile]);
+  useEffect(() => {
+    setActive(null);
+  }, [searchText]);
   return (
     <>
       <AnimatePresence>
@@ -55,6 +58,7 @@ const Books: React.FC<booksProps> = ({ searchText }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
             className='fixed inset-0 bg-black/20 h-full w-full z-10'
           />
         )}
@@ -65,9 +69,10 @@ const Books: React.FC<booksProps> = ({ searchText }) => {
             <motion.div
               layoutId={`book-card-${active.id}`}
               ref={ref}
-              className='p-10 rounded-3xl bg-background w-1/2 flex flex-col lg:flex-row justify-start items-start gap-10'
+              className='p-10 rounded-3xl bg-background lg:w-[50vw] w-2/3 flex flex-col lg:flex-row justify-start items-start max-h-fit gap-10'
               style={{
-                height: state === 'expanded' ? '33em' : '30em',
+                minHeight: state === 'expanded' ? '33em' : '30em',
+                maxHeight: 'fit-content',
               }}
             >
               <div className='w-1/2 h-full'>
@@ -77,7 +82,7 @@ const Books: React.FC<booksProps> = ({ searchText }) => {
                   className='h-full w-full rounded-2xl'
                 ></motion.img>
               </div>
-              <div className='w-full flex flex-col justify-start items-start pr-8 py-6'>
+              <div className='w-full flex flex-col justify-start items-start py-6'>
                 <div>
                   <span className='text-base p-2 rounded-full text-muted-foreground px-4'>
                     {active?.author}
@@ -92,6 +97,22 @@ const Books: React.FC<booksProps> = ({ searchText }) => {
                   </motion.p>
                 </div>
                 <div className='flex flex-row justify-start items-center gap-3'>
+                  <motion.div
+                    layoutId={`progress-${active.id}`}
+                    className='w-[15%] flex flex-row justify-end items-center bg-muted-background'
+                  >
+                    <AnimatedCircularProgressBar
+                      max={100}
+                      min={0}
+                      value={50}
+                      className='size-20'
+                      gaugePrimaryClassName='stroke-green-500'
+                      gaugeSecondaryClassName='stroke-muted'
+                      textClassName='text-foreground text-sm'
+                      suffixClassName='text-xs'
+                      suffix='%'
+                    />
+                  </motion.div>
                   <Button
                     className='text-muted-foreground bg-muted rounded-full p-2 px-3'
                     size='sm'
@@ -112,19 +133,20 @@ const Books: React.FC<booksProps> = ({ searchText }) => {
                   </Button>
                 </div>
                 <div className='flex flex-row justify-start items-center gap-3 mt-4'>
-                  <Button size='sm'>
-                    <BookOpenText /> Read
-                  </Button>
+                  <Link href={`/read/${active.id}`}>
+                    <Button size='sm'>
+                      <BookOpenText /> Continue Reading
+                    </Button>
+                  </Link>
                   <motion.div layoutId={`add-to-shelf-${active.id}`}>
                     <AddToShelfButton id={active.id.toString()} />
                   </motion.div>
                 </div>
-                <motion.p
-                  layoutId={`description-${active.id}`}
-                  className='mt-3'
-                >
-                  <BookDescription description={active?.description || ''} />
-                </motion.p>
+                <div className='w-full bg-muted mt-3 p-3 rounded-lg'>
+                  <motion.p layoutId={`description-${active.id}`}>
+                    <BookDescription description={active?.description || ''} />
+                  </motion.p>
+                </div>
               </div>
             </motion.div>
           </div>
@@ -176,7 +198,25 @@ const Books: React.FC<booksProps> = ({ searchText }) => {
                     >
                       {book.description}
                     </motion.p>
+                    <motion.div
+                      layoutId={`add-to-shelf-${book.id}`}
+                    ></motion.div>
                   </div>
+                  <motion.div
+                    layoutId={`progress-${book.id}`}
+                    className='w-[15%] flex flex-row justify-end bg-muted-background'
+                  >
+                    <AnimatedCircularProgressBar
+                      max={100}
+                      min={0}
+                      value={50}
+                      className='size-30'
+                      gaugePrimaryClassName='stroke-green-500'
+                      textClassName='text-white text-sm'
+                      suffixClassName='text-xs'
+                      suffix='%'
+                    />
+                  </motion.div>
                 </div>
               </div>
             </motion.div>

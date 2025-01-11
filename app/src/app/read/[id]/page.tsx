@@ -1,4 +1,5 @@
 import Header from '@/components/ui/header/book-header';
+import Reader from '@/features/books/components/reader/reader';
 import React from 'react';
 
 export default async function Page({
@@ -11,6 +12,9 @@ export default async function Page({
   return (
     <div className='w-full'>
       <Header />
+      <div className='page-container'>
+        <Reader />
+      </div>
     </div>
   );
 }

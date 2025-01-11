@@ -15,6 +15,7 @@ import {
   PopoverBody,
 } from '@/components/ui/popover';
 import { Heart } from 'lucide-react';
+import { cn } from '@/lib/utils';
 type PopoverProps = {
   title?: string;
   children: React.ReactNode;
@@ -32,14 +33,14 @@ const Popover: React.FC<PopoverProps> = ({
   title,
   trigger,
   withCloseButton = true,
-  className = 'h-[200px] w-[364px]',
+  className,
 }) => {
   return (
     <PopoverRoot>
       <PopoverTrigger variant='link' size='icon'>
         {trigger}
       </PopoverTrigger>
-      <PopoverContent className={className}>
+      <PopoverContent className={cn('', className)}>
         {title ||
           header ||
           (withCloseButton && (

@@ -29,14 +29,14 @@ export default async function Page({
               />
             </div>
           </div>
-          <div className='w-full flex flex-col justify-start items-start pr-16'>
+          <div className='w-full flex flex-col justify-start items-start lg:pr-16 pr-0'>
             <div>
               <span className='text-lg p-2 rounded-full text-muted-foreground px-4'>
                 {book?.author}
               </span>
             </div>
             <div>
-              <span className='text-8xl text-foreground font-semibold'>
+              <span className='text-5xl text-foreground font-semibold'>
                 {book?.title}
               </span>
             </div>

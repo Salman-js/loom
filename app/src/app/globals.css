@@ -106,19 +106,19 @@ body {
 }
 
 .card-container {
-  @apply w-full h-full flex flex-col justify-end lg:bg-gradient-to-b from-transparent to-zinc-900 p-4 transition ease-in-out;
+  @apply w-full h-full flex flex-col justify-between p-4 transition ease-in-out;
 }
 
 .card-detail-container {
-  @apply absolute bottom-0 left-0 w-full flex flex-row justify-between items-end opacity-100 translate-y-0 lg:opacity-0 lg:translate-y-full transition-all duration-300 ease-in-out p-4;
+  @apply absolute bottom-0 left-0 w-full lg:h-0 h-full flex flex-row justify-between items-end transition-all lg:opacity-0 opacity-100 duration-300 ease-in-out p-4 bg-gradient-to-b from-transparent to-zinc-900;
 }
 
 .book-card:hover .card-detail-container {
-  @apply opacity-100 translate-y-0 lg:bg-gradient-to-b h-full from-transparent to-zinc-900;
+  @apply h-full lg:bg-gradient-to-b from-transparent to-zinc-900 opacity-100;
 }
 
 .text-container {
-  @apply w-4/5;
+  @apply w-full;
 }
 
 .shelf-card {

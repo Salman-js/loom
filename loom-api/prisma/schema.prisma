@@ -26,6 +26,7 @@ model User {
   password     String
   gender       Gender
   books        Book[]         @relation("books")
+  shelves      Shelf[]        @relation("shelves")
   refreshToken RefreshToken[] @relation("refresh_token")
   createdAt    DateTime       @default(now()) @map("created_at")
 
@@ -45,40 +46,52 @@ model RefreshToken {
 }
 
 model Book {
-  id      String @id @default(uuid())
-  title   String
-  userId  String @map("user_id")
-  user    User   @relation("books", fields: [userId], references: [id])
-  cover   Cover? @relation("cover", fields: [coverId], references: [id])
-  coverId String @unique
-  epub    Epub?  @relation("epub", fields: [epubId], references: [id])
-  epubId  String @unique
+  id        String   @id @default(uuid())
+  title     String
+  userId    String   @map("user_id")
+  user      User     @relation("books", fields: [userId], references: [id])
+  shelves   Shelf[]  @relation("shelved_books")
+  cover     Cover?   @relation("cover", fields: [coverId], references: [id])
+  coverId   String   @unique
+  epub      Epub?    @relation("epub", fields: [epubId], references: [id])
+  epubId    String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("books")
 }
 
 model Epub {
-  id        String   @id @default(uuid())
-  fileName  String
-  filePath  String
-  fileSize  String?
-  mimeType  String?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  book      Book?    @relation("epub")
+  id       String  @id @default(uuid())
+  fileName String
+  filePath String
+  fileSize String?
+  mimeType String?
+  book     Book?   @relation("epub")
 
   @@map("epubs")
 }
 
 model Cover {
-  id        String   @id @default(uuid())
-  fileName  String   @map("file_name")
-  filePath  String   @map("file_path")
-  fileSize  String?  @map("file_size")
-  mimeType  String?  @map("mime_type")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  book      Book?    @relation("cover")
+  id       String  @id @default(uuid())
+  fileName String  @map("file_name")
+  filePath String  @map("file_path")
+  fileSize String? @map("file_size")
+  mimeType String? @map("mime_type")
+  book     Book?   @relation("cover")
 
   @@map("images")
+}
+
+model Shelf {
+  id        String   @id @default(uuid())
+  name      String   @map("shelf_name")
+  userId    String   @map("user_id")
+  user      User     @relation("shelves", fields: [userId], references: [id])
+  books     Book[]   @relation("shelved_books")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([name, userId])
+  @@map("shelves")
 }
