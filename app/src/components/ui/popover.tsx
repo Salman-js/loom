@@ -98,7 +98,10 @@ const PopoverTrigger = React.forwardRef<HTMLButtonElement, PopoverTriggerProps>(
           ref={ref}
           variant={variant}
           className={className}
-          onClick={openPopover}
+          onClick={(e) => {
+            e.preventDefault();
+            openPopover();
+          }}
           size={size}
         >
           <motion.span

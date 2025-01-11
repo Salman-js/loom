@@ -106,7 +106,7 @@ body {
 }
 
 .card-container {
-  @apply w-full h-full flex flex-col justify-end lg:bg-none bg-gradient-to-b from-transparent to-zinc-900 lg:hover:bg-gradient-to-b hover:from-transparent hover:to-zinc-900 p-4 transition ease-in-out;
+  @apply w-full h-full flex flex-col justify-end lg:bg-gradient-to-b from-transparent to-zinc-900 p-4 transition ease-in-out;
 }
 
 .card-detail-container {
@@ -114,7 +114,7 @@ body {
 }
 
 .book-card:hover .card-detail-container {
-  @apply opacity-100 translate-y-0;
+  @apply opacity-100 translate-y-0 lg:bg-gradient-to-b h-full from-transparent to-zinc-900;
 }
 
 .text-container {

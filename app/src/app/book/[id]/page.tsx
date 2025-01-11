@@ -19,13 +19,13 @@ export default async function Page({
     <div className='w-full'>
       <Header />
       <div className='page-container'>
-        <div className='w-full flex flex-row justify-start items-center p-10 px-20 gap-8'>
-          <div className='w-1/2 lg:w-[45%] p-14 bg-muted'>
+        <div className='w-full flex flex-col lg:flex-row justify-start items-center p-10 lg:px-20 px-3 gap-8'>
+          <div className='w-full md:w-1/2 lg:w-[45%] lg:p-14 p-6 bg-muted'>
             <div className='w-full overflow-visible flex flex-row justify-center'>
               <img
                 src={book?.image as string}
                 alt={book?.title as string}
-                className='w-full lg:max-w-[20em] max-w-[25em] h-[50vh] shadow-lg'
+                className='w-full lg:max-w-[20em] max-w-max h-[50vh] shadow-lg'
               />
             </div>
           </div>
