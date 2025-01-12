@@ -14,14 +14,6 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = () => {
 
   return (
     <SidebarMenuSub>
-      <SidebarMenuItem onClick={() => setTheme('system')}>
-        <SidebarMenuButton>
-          <div className='mr-2 w-4'>
-            {theme === 'system' && <Check size={18} />}
-          </div>
-          System
-        </SidebarMenuButton>
-      </SidebarMenuItem>
       <SidebarMenuItem onClick={() => setTheme('dark')}>
         <SidebarMenuButton>
           <div className='mr-2 w-4'>

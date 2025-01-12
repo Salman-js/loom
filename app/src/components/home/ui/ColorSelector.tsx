@@ -1,4 +1,7 @@
+'use client';
+
 import { SidebarMenuSub } from '@/components/ui/sidebar';
+import { useReaderStyle } from '@/features/books/hooks/use-reader-style';
 import { Check } from 'lucide-react';
 import { useState } from 'react';
 
@@ -13,19 +16,13 @@ const colorOptions: {
 ];
 
 export default function ColorSelector() {
-  const [selectedColor, setSelectedColor] = useState<{
-    background: React.CSSProperties['color'];
-    text: React.CSSProperties['color'];
-  }>({
-    background: '#18181b',
-    text: '#fafafa',
-  });
+  const { background, text, setColorStyle } = useReaderStyle();
 
   const handleSelectColor = (color: {
     background: React.CSSProperties['color'];
     text: React.CSSProperties['color'];
   }) => {
-    setSelectedColor(color);
+    setColorStyle(color);
   };
 
   return (
@@ -36,7 +33,7 @@ export default function ColorSelector() {
             <div
               key={color.background} // Add a unique key
               className={`rounded-full p-2 flex justify-center items-center cursor-pointer ${
-                selectedColor.background === color.background
+                background === color.background
                   ? 'border-2 border-primary'
                   : 'border border-foreground'
               }`}
@@ -47,7 +44,7 @@ export default function ColorSelector() {
             >
               <Check
                 color={
-                  selectedColor.background === color.background
+                  background === color.background
                     ? color.text
                     : color.background
                 }

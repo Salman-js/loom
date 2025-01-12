@@ -35,7 +35,7 @@ export default async function RootLayout({
         <SessionProvider session={session}>
           <ThemeProvider
             attribute='class'
-            enableSystem
+            defaultTheme='dark'
             disableTransitionOnChange
           >
             <Wrapper>{children}</Wrapper>

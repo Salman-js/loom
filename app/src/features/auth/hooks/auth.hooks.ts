@@ -2,6 +2,7 @@ import { store } from '@/store/store';
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { useEffect } from 'react';
+import { useStore } from 'zustand';
 
 export const useSignOut = <TData = any, TVariables = any>() => {
   const mutationFn = async () => {
@@ -41,8 +42,7 @@ export const useSignIn = <TData = any, TVariables = any>(
 };
 
 export const useAuth = () => {
-  const user = store.getState().user;
-  const setUser = store.getState().setUser;
+  const { user, setUser } = useStore(store);
   return {
     user,
     setUser,
