@@ -236,14 +236,18 @@ PopoverLabel.displayName = 'PopoverLabel';
 interface PopoverTextareaProps {
   className?: string;
   id?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
 const PopoverTextarea = React.forwardRef<
   HTMLTextAreaElement,
   PopoverTextareaProps
->(({ className, id }, ref) => {
+>(({ className, id, onChange, value }, ref) => {
   const { note, setNote } = usePopover();
-
+  React.useEffect(() => {
+    if (value) setNote(value);
+  }, [value]);
   return (
     <textarea
       ref={ref}
@@ -253,8 +257,8 @@ const PopoverTextarea = React.forwardRef<
         className
       )}
       autoFocus
-      value={note}
-      onChange={(e) => setNote(e.target.value)}
+      value={value}
+      onChange={onChange}
     />
   );
 });

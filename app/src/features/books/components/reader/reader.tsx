@@ -7,10 +7,13 @@ import { useTheme } from 'next-themes';
 import { AnimatePresence, motion } from 'framer-motion';
 import AddNotePopover from '../AddNote';
 import { Button } from '@/components/ui/button';
-import { Copy } from 'lucide-react';
+import { Copy, Fullscreen } from 'lucide-react';
 import AddHighlightPopover from '../AddHighilight';
 import { useReaderStyle } from '../../hooks/use-reader-style';
 import { ReaderStyleState } from '@/store/store';
+import CopyToClipBoard from '../CopyToClipBoard';
+import SwitchPageMode from '../SwitchPageMode';
+import ReaderControls from '../ReaderControls';
 
 type readerProps = {};
 
@@ -21,7 +24,7 @@ function updateTheme(rendition: Rendition, styles: ReaderStyleState) {
   themes.override('font-family', styles.fontFamily as string);
   themes.override('font-size', styles.fontSize as string);
 }
-type ITextSelection = {
+export type ITextSelection = {
   text: string;
   cfiRange: string;
 };
@@ -34,6 +37,8 @@ const Reader: React.FC<readerProps> = () => {
   const [highlights, setHighlights] = useState<
     (ITextSelection & { color: string })[]
   >([]);
+  const [isSinglePage, setIsSinglePage] = useState(false);
+  const [notes, setNotes] = useState<(ITextSelection & { note: string })[]>([]);
   const toc = useRef<NavItem[]>([]);
   const [buttonPosition, setButtonPosition] = useState<{
     x: number;
@@ -41,6 +46,23 @@ const Reader: React.FC<readerProps> = () => {
   } | null>(null);
 
   const [rendition, setRendition] = useState<Rendition | undefined>(undefined);
+  const readerRef = useRef<HTMLDivElement>(null); // Reference to the container
+
+  const goFullscreen = () => {
+    if (readerRef.current) {
+      if (readerRef.current.requestFullscreen) {
+        readerRef.current.requestFullscreen();
+      }
+    }
+  };
+  const toggleMode = () => {
+    if (rendition) {
+      const newSpread = isSinglePage ? 'auto' : 'none';
+      rendition.spread(newSpread);
+      rendition.display();
+    }
+    setIsSinglePage(!isSinglePage);
+  };
   const handleHighlight = (color: string) => {
     if (rendition && currentSelection) {
       rendition.annotations.add(
@@ -67,6 +89,19 @@ const Reader: React.FC<readerProps> = () => {
       // Update the highlights state
       setHighlights((prev) =>
         prev.filter((h) => h.cfiRange !== currentSelection.cfiRange)
+      );
+    }
+  };
+  const handleAddNote = (text: string) => {
+    if (rendition && currentSelection) {
+      handleRemoveNote();
+      setNotes((prev) => [...prev, { ...currentSelection, note: text }]);
+    }
+  };
+  const handleRemoveNote = () => {
+    if (rendition && currentSelection) {
+      setNotes((prev) =>
+        prev.filter((n) => n.cfiRange !== currentSelection.cfiRange)
       );
     }
   };
@@ -99,11 +134,9 @@ const Reader: React.FC<readerProps> = () => {
               text: selectedText,
               cfiRange,
             });
-          }, 1000);
+          }, 500);
         }
       };
-
-      // Listen for selection events
       rendition.on('selected', setRenderSelection);
 
       return () => {
@@ -130,7 +163,6 @@ const Reader: React.FC<readerProps> = () => {
 
       // Attach the click event listener
       rendition.on('click', handleClick);
-
       // Cleanup all listeners when the component unmounts or rendition changes
       return () => {
         rendition.off('mousedown', handleMouseDown);
@@ -140,9 +172,17 @@ const Reader: React.FC<readerProps> = () => {
     }
   }, [rendition, isMouseDown]);
   return (
-    <div className='w-full h-[90vh]'>
-      {/* Make it show one page at a time instead of two */}
-
+    <div
+      className={`${
+        isSinglePage ? 'w-full lg:w-1/2' : 'w-full'
+      } flex flex-col h-[90vh] mx-auto`}
+      ref={readerRef}
+    >
+      <ReaderControls
+        isSinglePage={isSinglePage}
+        toggle={toggleMode}
+        onFullScreen={goFullscreen}
+      />
       <ReactReader
         url='https://react-reader.metabits.no/files/alice.epub'
         location={location}
@@ -153,7 +193,9 @@ const Reader: React.FC<readerProps> = () => {
             setChapterPage(displayed.page);
           }
         }}
-        readerStyles={getStyle(theme)}
+        readerStyles={{
+          ...getStyle(theme),
+        }}
         getRendition={(rend: Rendition) => setRendition(rend)}
         loadingView={<div>Loading...</div>}
         epubViewStyles={{
@@ -178,7 +220,7 @@ const Reader: React.FC<readerProps> = () => {
               position: 'absolute',
               left: buttonPosition.x + 70 - (chapterPage - 1) * 770,
               top: buttonPosition.y + 120,
-              zIndex: 1000,
+              zIndex: 49,
             }}
             initial={{
               height: 0,
@@ -189,9 +231,7 @@ const Reader: React.FC<readerProps> = () => {
             transition={{ duration: 0.15 }}
             className='flex flex-row justify-center items-center space-x-1 p-1 rounded-xl bg-secondary shadow-md border'
           >
-            <Button size='icon' variant='link'>
-              <Copy />
-            </Button>
+            <CopyToClipBoard currentSelection={currentSelection} />
             <AddHighlightPopover
               onSelect={handleHighlight}
               highlighted={highlights.some(
@@ -199,7 +239,12 @@ const Reader: React.FC<readerProps> = () => {
               )}
               onUnHighlight={() => handleRemoveHighlight()}
             />
-            <AddNotePopover />
+            <AddNotePopover
+              onSave={handleAddNote}
+              onDelete={handleRemoveNote}
+              currentSelection={currentSelection}
+              notes={notes}
+            />
           </motion.div>
         </AnimatePresence>
       )}

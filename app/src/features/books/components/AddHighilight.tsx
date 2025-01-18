@@ -2,6 +2,7 @@
 
 import { Highlighter, Pencil, Save, X } from 'lucide-react';
 import Popover from '../../../components/ui/factory/Popover';
+import { Tooltip } from '@/components/ui/factory/Tooltip';
 
 const highlightColors = ['red', 'yellow', 'green', 'blue', 'purple', 'orange'];
 export default function AddHighlightPopover({
@@ -15,7 +16,11 @@ export default function AddHighlightPopover({
 }) {
   return (
     <Popover
-      trigger={<Highlighter />}
+      trigger={
+        <Tooltip content='Highlight'>
+          <Highlighter />
+        </Tooltip>
+      }
       withCloseButton={false}
       className='top-[2.7rem] flex flex-row space-x-1 p-1 bg-secondary'
     >
