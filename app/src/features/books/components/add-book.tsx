@@ -14,23 +14,34 @@ import { SidebarMenuButton } from '@/components/ui/sidebar';
 import { FileUpload } from './file-upload';
 
 export function AddBookDialog() {
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedFile, setSelectedFile] = useState<{
+    file: File;
+    cover?: string | undefined;
+  } | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
   // Handle file input change
-  const handleFileChange = (files: File[]) => {
-    if (files.every((file) => file.type === 'application/epub')) {
-      setSelectedFiles(files);
+  const handleFileChange = (
+    newFile: { file: File; cover?: string | undefined } | null
+  ) => {
+    if (!newFile) {
+      setSelectedFile(null);
+      setUploadError(null);
+      return;
+    }
+    if (newFile?.file.type === 'application/epub') {
+      setSelectedFile(newFile);
       setUploadError(null);
     } else {
+      setSelectedFile(null);
       setUploadError('Please upload a valid EPUB file.');
     }
   };
 
   // Handle file upload submission
   const handleUpload = async () => {
-    if (!selectedFiles.length) {
+    if (!selectedFile) {
       setUploadError('No file selected.');
       return;
     }

@@ -1,7 +1,7 @@
 import { books } from '@/lib/constants';
 import React, { useEffect, useId, useRef, useState } from 'react';
 import { useSidebar } from '@/components/ui/sidebar';
-import { cn } from '@/lib/utils';
+import { cn, getCover } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { IBook } from '../interface/book.interface';
 import { useOutsideClick } from '@/hooks/use-outsideClick';
@@ -14,6 +14,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useRouter } from 'next/navigation';
 import AnimatedCircularProgressBar from '@/components/ui/animated-circular-progress-bar';
 import Link from 'next/link';
+import { Book } from 'epubjs';
 
 type booksProps = {
   searchText: string;
@@ -50,6 +51,9 @@ const Books: React.FC<booksProps> = ({ searchText }) => {
   useEffect(() => {
     setActive(null);
   }, [searchText]);
+  useEffect(() => {
+    getCover('/alice.epub');
+  }, []);
   return (
     <>
       <AnimatePresence>
@@ -177,6 +181,7 @@ const Books: React.FC<booksProps> = ({ searchText }) => {
               onClick={() =>
                 isMobile ? router.push(`/book/${book.id}`) : setActive(book)
               }
+              key={book.id}
             >
               <motion.img
                 src={book.image}
