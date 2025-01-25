@@ -4,11 +4,10 @@ import { HashService } from './hash/hash.service';
 import { JwtGeneratorService } from './jwt/jwt.service';
 import { AuthController } from './auth.controller';
 import { UserModule } from '../user/user.module';
-import { MailModule } from '../mail/mail.module';
 import { AccessTokenStrategy } from './strategies/access_token.strategy';
 
 @Module({
-  imports: [UserModule, MailModule],
+  imports: [UserModule],
   providers: [
     AuthService,
     HashService,

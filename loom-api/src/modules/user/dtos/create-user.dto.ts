@@ -1,29 +1,24 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { OtpSentTo } from '@prisma/client'
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class OtpDto {
   @IsNumber()
-  otp: string
+  otp: string;
 
   @IsOptional()
   @IsString()
-  email: string
+  email: string;
 
   @IsString()
-  userId: string
-
-  @IsOptional()
-  @IsEnum(OtpSentTo)
-  sentOver: OtpSentTo
+  userId: string;
 }
 
 export class RefreshTokenDto {
   @IsString()
-  userId: string
+  userId: string;
 
   @IsString()
-  token: string
+  token: string;
 }
 export class VeifiyEmailOrPhoneDto {
   @ApiProperty({
@@ -32,11 +27,7 @@ export class VeifiyEmailOrPhoneDto {
     required: true,
   })
   @IsNumber()
-  otp: string
-
-  @IsOptional()
-  @IsEnum(OtpSentTo)
-  sentOver: OtpSentTo
+  otp: string;
 
   @ApiProperty({
     example: '1234567890',
@@ -44,17 +35,17 @@ export class VeifiyEmailOrPhoneDto {
     required: true,
   })
   @IsString()
-  userId: string
+  userId: string;
 }
 
 export class UpdateUserPasswordDto {
   @IsString()
-  newPassword: string
+  newPassword: string;
 }
 
 export class UpdateSelfPasswordDto {
   @IsString()
-  oldPassword: string
+  oldPassword: string;
   @IsString()
-  newPassword: string
+  newPassword: string;
 }

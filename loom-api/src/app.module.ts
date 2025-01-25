@@ -5,7 +5,6 @@ import {
   NestMiddleware,
   OnModuleInit,
 } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { DatabaseService } from './modules/database/database.service';
 import { LoggingMiddleware } from './utils/filters/logger/logger.middleware';
 import { DatabaseModule } from './modules/database/database.module';
@@ -19,8 +18,14 @@ import { UserModule } from './modules/user/user.module';
 import { BookModule } from './modules/book/book.module';
 
 @Module({
-  imports: [DatabaseModule, configModule, clsModule, FeatureModule, UserModule, BookModule],
-  controllers: [AppController],
+  imports: [
+    DatabaseModule,
+    configModule,
+    clsModule,
+    FeatureModule,
+    UserModule,
+    BookModule,
+  ],
   providers: [
     {
       provide: APP_FILTER,
