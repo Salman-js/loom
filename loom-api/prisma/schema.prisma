@@ -13,43 +13,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Gender {
-  Male
-  Female
-}
-
-model User {
-  id           String         @id @default(uuid())
-  email        String         @unique
-  firstName    String         @map("first_name")
-  lastName     String?        @map("last_name")
-  password     String
-  gender       Gender
-  books        Book[]         @relation("books")
-  shelves      Shelf[]        @relation("shelves")
-  refreshToken RefreshToken[] @relation("refresh_token")
-  createdAt    DateTime       @default(now()) @map("created_at")
-
-  @@index([email, createdAt])
-  @@map("users")
-}
-
-model RefreshToken {
-  id        String   @id @default(uuid())
-  token     String   @unique
-  userId    String   @map("user_id")
-  user      User     @relation("refresh_token", fields: [userId], references: [id])
-  createdAt DateTime @default(now()) @map("created_at")
-  expiresAt DateTime @map("expires_at")
-
-  @@map("refresh_tokens")
-}
-
 model Book {
   id        String   @id @default(uuid())
   title     String
   userId    String   @map("user_id")
-  user      User     @relation("books", fields: [userId], references: [id])
   shelves   Shelf[]  @relation("shelved_books")
   cover     Cover?   @relation("cover", fields: [coverId], references: [id])
   coverId   String   @unique
@@ -87,7 +54,6 @@ model Shelf {
   id        String   @id @default(uuid())
   name      String   @map("shelf_name")
   userId    String   @map("user_id")
-  user      User     @relation("shelves", fields: [userId], references: [id])
   books     Book[]   @relation("shelved_books")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

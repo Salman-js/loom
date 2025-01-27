@@ -14,18 +14,10 @@ import { FeatureModule } from './feature.module';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './utils/filters/httpException.filter';
 import { DatabaseFilter } from './utils/filters/database.filter';
-import { UserModule } from './modules/user/user.module';
 import { BookModule } from './modules/book/book.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-    configModule,
-    clsModule,
-    FeatureModule,
-    UserModule,
-    BookModule,
-  ],
+  imports: [DatabaseModule, configModule, clsModule, FeatureModule, BookModule],
   providers: [
     {
       provide: APP_FILTER,
