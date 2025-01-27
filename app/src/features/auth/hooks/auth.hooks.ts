@@ -19,7 +19,7 @@ export const useSignOut = <TData = any, TVariables = any>() => {
 };
 
 export const useSignIn = <TData = any, TVariables = any>(
-  provider: 'google' | 'github'
+  provider: 'google' | 'github' | 'facebook'
 ) => {
   const { data: session } = useSession();
   const mutationFn = async () => {
