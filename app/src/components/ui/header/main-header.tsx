@@ -11,13 +11,13 @@ type HeaderProps = {
 const Header: React.FC<HeaderProps> = ({ searchText, onSearchTextChange }) => {
   return (
     <div className='main-header justify-end'>
-      <div className='flex flex-row space-x-3'>
+      <div className='flex flex-row space-x-3 items-center'>
         <div className='lg:hidden block'>
           <SidebarTrigger />
         </div>
         <Input
           placeholder='Search...'
-          className='w-80'
+          className='w-full'
           value={searchText ?? undefined}
           onChange={(e) => onSearchTextChange?.(e.target.value)}
         />

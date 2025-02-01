@@ -1,10 +1,14 @@
 'use client';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Facebook, Github, Loader2 } from 'lucide-react';
+import { Loader2, Github, Facebook } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { signUpSchema } from '@/lib/form.schema';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
   FormControl,
@@ -13,28 +17,26 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { signInSchema } from '@/lib/form.schema';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useTheme } from 'next-themes';
-import { useEffect, useMemo } from 'react';
 import { toast } from '@/hooks/use-toast';
-import { store } from '@/store/store';
-import { useSignIn } from '@/features/auth/hooks/auth.hooks';
+import { useMemo } from 'react';
+import { useSignIn, useSignUp } from '@/features/auth/hooks/auth.hooks';
 import { ErrorContext } from 'better-auth/react';
 
-export function SignInForm({
+export function SignUpForm({
   className,
   ...props
 }: React.ComponentProps<'div'>) {
-  const form = useForm<z.infer<typeof signInSchema>>({
-    resolver: zodResolver(signInSchema),
+  const { theme } = useTheme();
+  const form = useForm<z.infer<typeof signUpSchema>>({
+    resolver: zodResolver(signUpSchema),
     defaultValues: {
       email: '',
       password: '',
+      name: '',
     },
   });
+
   const onError = (ctx: ErrorContext) => {
     if (ctx?.error?.message?.includes('email')) {
       form.setError('email', {
@@ -47,27 +49,23 @@ export function SignInForm({
       });
     }
   };
-  const { isPending: isEmailPending, mutate: emailSignIn } = useSignIn(
-    'email',
-    {
-      onError,
-    }
-  );
-  async function onSubmit(values: z.infer<typeof signInSchema>) {
-    await emailSignIn({ ...values });
+  const { isPending: signUpPending, mutate: signUp } = useSignUp({
+    onError,
+  });
+  async function onSubmit(values: z.infer<typeof signUpSchema>) {
+    await signUp({ ...values });
   }
-  const { isPending: isGithubPending, mutate: githubSignIn } = useSignIn(
-    'github',
-    { onError }
-  );
+
+  const { isPending: isGithubPending, mutate: githubSignIn } =
+    useSignIn('github');
   const { isPending: isGooglePending, mutate: googleSignIn } =
     useSignIn('google');
   const { isPending: isFacebookPending, mutate: facebookSignIn } =
     useSignIn('facebook');
   const loading = useMemo(
     () =>
-      isGithubPending || isGooglePending || isFacebookPending || isEmailPending,
-    [isGithubPending, isGooglePending, isFacebookPending, isEmailPending]
+      isGithubPending || isGooglePending || isFacebookPending || signUpPending,
+    [isGithubPending, isGooglePending, isFacebookPending, signUpPending]
   );
   const githubLogin = async () => {
     githubSignIn({});
@@ -88,10 +86,10 @@ export function SignInForm({
     >
       <div></div>
       <div className='flex flex-col space-y-4 lg:w-1/2 w-4/5'>
-        <div className='flex flex-col text-center'>
-          <h1 className='text-2xl font-bold'>Welcome Back</h1>
-          <p className='text-balance text-muted-foreground px-14'>
-            sign in to your Loom account
+        <div className='flex flex-col items-center text-center'>
+          <h1 className='text-2xl font-bold'>Sign up</h1>
+          <p className='text-balance text-muted-foreground'>
+            Enter your information to create an account
           </p>
         </div>
         <div className='w-full flex flex-row gap-2'>
@@ -138,8 +136,20 @@ export function SignInForm({
             <div className='grid gap-4'>
               <FormField
                 control={form.control}
+                name='name'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder='John Doe' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
                 name='email'
-                disabled={loading}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>
@@ -153,18 +163,9 @@ export function SignInForm({
               <FormField
                 control={form.control}
                 name='password'
-                disabled={loading}
                 render={({ field }) => (
                   <FormItem>
-                    <div className='flex items-center'>
-                      <FormLabel>Password</FormLabel>
-                      <a
-                        href='#'
-                        className='ml-auto inline-block text-sm underline-offset-4 hover:underline'
-                      >
-                        Forgot your password?
-                      </a>
-                    </div>
+                    <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input type='password' {...field} />
                     </FormControl>
@@ -176,23 +177,32 @@ export function SignInForm({
                 {loading ? (
                   <Loader2 size={16} className='animate-spin' />
                 ) : (
-                  'Sign in'
+                  'Create an account'
                 )}
               </Button>
               <div className='text-center text-sm'>
-                Don&apos;t have an account?{' '}
-                <Link href='/sign-up' className='underline underline-offset-4'>
-                  Sign up
+                Already have an account?{' '}
+                <Link href='/sign-in' className='underline underline-offset-4'>
+                  Sign in
                 </Link>
               </div>
             </div>
           </form>
         </Form>
       </div>
-      <div className='text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary my-6'>
+      <div className='text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary'>
         By clicking continue, you agree to our <a href='#'>Terms of Service</a>{' '}
         and <a href='#'>Privacy Policy</a>.
       </div>
     </div>
   );
+}
+
+async function convertImageToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }

@@ -1,4 +1,4 @@
-import { IShelf } from '@/interface/shelf.interface';
+import { IShelf } from '@/features/shelves/interface/shelf.interface';
 
 export const books = [
   {

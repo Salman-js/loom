@@ -1,31 +1,28 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["app"]
 }
 
 model Book {
   id        String   @id @default(uuid())
   title     String
   userId    String   @map("user_id")
-  shelves   Shelf[]  @relation("shelved_books")
-  cover     Cover?   @relation("cover", fields: [coverId], references: [id])
   coverId   String   @unique
-  epub      Epub?    @relation("epub", fields: [epubId], references: [id])
   epubId    String   @unique
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  cover     Cover    @relation("cover", fields: [coverId], references: [id])
+  epub      Epub     @relation("epub", fields: [epubId], references: [id])
+  shelves   Shelf[]  @relation("shelved_books")
 
   @@map("books")
+  @@schema("app")
 }
 
 model Epub {
@@ -37,6 +34,7 @@ model Epub {
   book     Book?   @relation("epub")
 
   @@map("epubs")
+  @@schema("app")
 }
 
 model Cover {
@@ -48,16 +46,18 @@ model Cover {
   book     Book?   @relation("cover")
 
   @@map("images")
+  @@schema("app")
 }
 
 model Shelf {
   id        String   @id @default(uuid())
   name      String   @map("shelf_name")
   userId    String   @map("user_id")
-  books     Book[]   @relation("shelved_books")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  books     Book[]   @relation("shelved_books")
 
   @@index([name, userId])
   @@map("shelves")
+  @@schema("app")
 }

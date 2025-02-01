@@ -1,11 +1,27 @@
-import NextAuth from 'next-auth';
-import { PrismaAdapter } from '@auth/prisma-adapter';
-import Github from 'next-auth/providers/github';
-import Google from 'next-auth/providers/google';
-import Facebook from 'next-auth/providers/facebook';
-import { prisma } from './prisma';
+import { betterAuth } from 'better-auth';
+import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { PrismaClient } from '@prisma/client';
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers: [Google, Github, Facebook],
-  adapter: PrismaAdapter(prisma),
+const prisma = new PrismaClient();
+export const auth = betterAuth({
+  database: prismaAdapter(prisma, {
+    provider: 'postgresql',
+  }),
+  emailAndPassword: {
+    enabled: true,
+  },
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID ?? '',
+      clientSecret: process.env.GITHUB_CLIENT_SECRET ?? '',
+    },
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+    },
+    facebook: {
+      clientId: process.env.FACEBOOK_CLIENT_ID ?? '',
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET ?? '',
+    },
+  },
 });

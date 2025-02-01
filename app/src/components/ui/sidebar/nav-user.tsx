@@ -37,7 +37,7 @@ import { IUser } from '@/features/users/interface/user.interface';
 import { useRouter } from 'next/navigation';
 import { useAuth, useSignOut } from '@/features/auth/hooks/auth.hooks';
 import { useEffect, useMemo, useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/lib/auth-client';
 
 export function NavUser() {
   const { isMobile } = useSidebar();
@@ -48,13 +48,7 @@ export function NavUser() {
   } = useSignOut();
   const { data } = useSession();
   const user = useMemo(() => data?.user, [data]);
-  const { setUser } = useAuth();
   const router = useRouter();
-  useEffect(() => {
-    if (user) {
-      setUser(user);
-    }
-  }, [user]);
   return (
     <SidebarMenu>
       <SidebarMenuItem>

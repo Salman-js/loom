@@ -18,8 +18,8 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { Library } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 import { AddBookDialog } from '@/features/books/components/add-book';
+import { useSession } from '@/lib/auth-client';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data } = useSession();

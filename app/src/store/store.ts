@@ -1,6 +1,6 @@
 import { IUser } from '@/features/users/interface/user.interface';
 import { createStore } from 'zustand/vanilla';
-import { persist } from 'zustand/middleware';
+import { persist, devtools } from 'zustand/middleware';
 type State = {
   user?: IUser;
 };
@@ -29,11 +29,14 @@ type ReaderStyleAction = {
 };
 export const store = createStore<State & Action>()(
   persist(
-    (set) => ({
-      user: undefined,
-      setUser: (newUser: IUser) => set({ user: newUser }),
-      signOut: () => set({ user: undefined }),
-    }),
+    devtools(
+      (set) => ({
+        user: undefined,
+        setUser: (newUser: IUser) => set({ user: newUser }),
+        signOut: () => set({ user: undefined }),
+      }),
+      { name: 'logged-user' }
+    ),
     { name: 'logged-user' }
   )
 );
