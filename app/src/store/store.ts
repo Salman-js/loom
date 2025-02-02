@@ -4,11 +4,17 @@ import { persist, devtools } from 'zustand/middleware';
 type State = {
   user?: IUser;
 };
+type TokenState = {
+  token?: string | null;
+};
 type Action = {
   setUser: (newUser: IUser) => void;
   signOut: () => void;
 };
 
+type TokenAction = {
+  setToken: (newToken: string | null) => void;
+};
 export type ReaderStyleState = {
   background: React.CSSProperties['color'];
   text: React.CSSProperties['color'];
@@ -41,6 +47,18 @@ export const store = createStore<State & Action>()(
   )
 );
 
+export const tokenStore = createStore<TokenState & TokenAction>()(
+  persist(
+    devtools(
+      (set) => ({
+        token: undefined,
+        setToken: (newToken: string) => set({ token: newToken }),
+      }),
+      { name: 'user-token' }
+    ),
+    { name: 'user-token' }
+  )
+);
 export const readerStyleStore = createStore<
   ReaderStyleState & ReaderStyleAction
 >()(

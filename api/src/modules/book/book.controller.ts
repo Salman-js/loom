@@ -13,18 +13,21 @@ import { BookService } from './book.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { UserId } from 'src/common/decorator/user_id.decorator';
 
 @Controller('book')
 export class BookController {
   constructor(private readonly bookService: BookService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('book'))
   create(
     @UploadedFile() file: Express.Multer.File,
     @Body() createBookDto: CreateBookDto,
+    @UserId() userId: string,
   ) {
-    return this.bookService.create(file, createBookDto);
+    console.log('User: ', userId);
+    return this.bookService.create(file, createBookDto, userId);
   }
 
   @Get()

@@ -1,3 +1,5 @@
+import { useSession } from '@/lib/auth-client';
+import { BASE_URI } from '@/lib/constants';
 import {
   QueryKey,
   useMutation,
@@ -10,7 +12,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 type Method = 'get' | 'post' | 'put' | 'delete' | 'patch';
 const createAxiosInstance = () => {
   const instance = axios.create({
-    baseURL: 'https://api.dropboxapi.com/2',
+    baseURL: BASE_URI,
   });
   return instance;
 };
@@ -28,7 +30,7 @@ export const useMutate = <TData = any, TVariables = any>(
       data: variables,
       headers: {
         'Content-Type': contentTypes ?? 'application/json',
-        Authorization: 'Bearer ' + localStorage.getItem('token'),
+        Authorization: 'Bearer ' + window.localStorage.getItem('bearer_token'),
       },
     };
     const response = await axiosInstance(config);
@@ -52,6 +54,10 @@ export function useFetchQuery<TData = any>(
     return await axiosInstance
       .get(url, {
         params: queryParams,
+        headers: {
+          Authorization:
+            'Bearer ' + window.localStorage.getItem('bearer_token'),
+        },
       })
       .then((res: AxiosResponse<TData>) => res.data);
   };

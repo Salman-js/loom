@@ -1,5 +1,5 @@
 import { signIn, signOut, signUp, useSession } from '@/lib/auth-client';
-import { store } from '@/store/store';
+import { store, tokenStore } from '@/store/store';
 import { useMutation } from '@tanstack/react-query';
 import {
   ErrorContext,
@@ -15,7 +15,7 @@ export const useSignOut = <TData = any, TVariables = any>(requestOptions?: {
   onError?: (context: ErrorContext) => void;
 }) => {
   const router = useRouter();
-  const { signOut: storeSignOut } = useAuth();
+  const { signOut: storeSignOut, setToken } = useAuth();
   const mutationFn = async () => {
     const res = await signOut({
       fetchOptions: {
@@ -23,7 +23,9 @@ export const useSignOut = <TData = any, TVariables = any>(requestOptions?: {
           requestOptions?.onError?.(ctx);
         },
         onSuccess: (ctx) => {
+          window.localStorage.removeItem('bearer_token');
           storeSignOut();
+          setToken(null);
           router.push('/sign-in');
           requestOptions?.onSuccess?.(ctx);
         },
@@ -48,7 +50,7 @@ export const useSignIn = <TData = any, TVariables = any>(
     onError?: (context: ErrorContext) => void;
   }
 ) => {
-  const { setUser } = useAuth();
+  const { setUser, setToken } = useAuth();
   const mutationFn = async (values?: { email?: string; password?: string }) => {
     const res =
       provider === 'email' && values
@@ -60,12 +62,11 @@ export const useSignIn = <TData = any, TVariables = any>(
             },
             {
               onError: (ctx) => {
-                console.log('Error: ', ctx.error);
                 requestOptions?.onError?.(ctx);
               },
               onSuccess: (ctx) => {
-                setUser(ctx.data?.user ?? null);
-                // router.push('/');
+                const authToken = ctx.response.headers.get('set-auth-token');
+                window.localStorage.setItem('bearer_token', authToken ?? '');
                 requestOptions?.onSuccess?.(ctx);
               },
               onRequest: (ctx) => {
@@ -79,11 +80,11 @@ export const useSignIn = <TData = any, TVariables = any>(
             callbackURL: '/',
             fetchOptions: {
               onError: (ctx) => {
-                console.log('Error: ', ctx.error);
                 requestOptions?.onError?.(ctx);
               },
               onSuccess: (ctx) => {
-                // router.push('/');
+                const authToken = ctx.response.headers.get('set-auth-token');
+                window.localStorage.setItem('bearer_token', authToken ?? '');
                 requestOptions?.onSuccess?.(ctx);
               },
               onRequest: (ctx) => {
@@ -103,8 +104,7 @@ export const useSignUp = <TData = any, TVariables = any>(requestOptions?: {
   onSuccess?: (context: SuccessContext) => void;
   onError?: (context: ErrorContext) => void;
 }) => {
-  const router = useRouter();
-  const { setUser } = useAuth();
+  const { setUser, setToken } = useAuth();
   const mutationFn = async (values: {
     name: string;
     email: string;
@@ -119,11 +119,13 @@ export const useSignUp = <TData = any, TVariables = any>(requestOptions?: {
       },
       {
         onError: (ctx) => {
-          console.log('Error: ', ctx.error);
           requestOptions?.onError?.(ctx);
         },
         onSuccess: (ctx) => {
-          setUser(ctx.data?.user ?? null);
+          const authToken = ctx.response.headers.get('set-auth-token');
+          window.localStorage.setItem('bearer_token', authToken ?? '');
+          // setUser(ctx.data?.user ?? null);
+          // setToken(authToken ?? null);
           // router.push('/');
           requestOptions?.onSuccess?.(ctx);
         },
@@ -140,9 +142,12 @@ export const useSignUp = <TData = any, TVariables = any>(requestOptions?: {
 };
 export const useAuth = () => {
   const { user, setUser, signOut } = useStore(store);
+  const { token, setToken } = useStore(tokenStore);
   return {
     user,
     setUser,
     signOut,
+    token,
+    setToken,
   };
 };

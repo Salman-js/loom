@@ -9,14 +9,14 @@ type sessionLoadingProps = {
 };
 
 const SessionSyncWrapper: React.FC<sessionLoadingProps> = ({ children }) => {
-  const { user, setUser } = useAuth();
+  const { user, setUser, setToken } = useAuth();
   const { data: session } = useSession();
   const sessionUser = useMemo(() => session?.user, [session]);
-  useEffect(() => {
-    if (sessionUser && !user) {
-      setUser(sessionUser);
-    }
-  }, [sessionUser]);
+  // useEffect(() => {
+  //   if (sessionUser && !user) {
+  //     setUser(sessionUser);
+  //   }
+  // }, [sessionUser]);
   return (sessionUser && !user) || (!sessionUser && user) ? (
     <div className='w-full h-full flex flex-col justify-center items-center'>
       <Loader2 size={50} className='animate-spin' />

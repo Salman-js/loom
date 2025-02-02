@@ -12,7 +12,7 @@ const SidebarContainer: React.FC<sidebarContainerProps> = () => {
   const { data: session } = useSession();
   const user = useMemo(() => session?.user, [session]);
   const pathname = usePathname();
-  return user ? (
+  return user && !pathname.includes('sign') ? (
     pathname.includes('read') ? (
       <BookSidebar />
     ) : (

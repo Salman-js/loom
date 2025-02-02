@@ -1,5 +1,5 @@
 import { createLogger, format, LoggerOptions, transports } from 'winston';
-import { utilities as nestWinstonModuleUtilities } from 'nest-winston'; // Custom log display format
+import { utilities as nestWinstonModuleUtilities } from 'nest-winston';
 import 'winston-daily-rotate-file';
 
 // For development environment
@@ -12,8 +12,7 @@ const loggerOptions: LoggerOptions = {
       format: format.combine(
         format.timestamp(),
         format.ms(),
-        // TODO: change the app name to the app's/project's name
-        nestWinstonModuleUtilities.format.nestLike('Inventory Api', {
+        nestWinstonModuleUtilities.format.nestLike('Loom Api', {
           colors: true,
           prettyPrint: true,
         }),
@@ -28,8 +27,7 @@ const loggerOptions: LoggerOptions = {
       format: format.combine(
         format.timestamp(),
         format.ms(),
-        // TODO: change the app name to the app's/project's name
-        nestWinstonModuleUtilities.format.nestLike('Inventory Api', {
+        nestWinstonModuleUtilities.format.nestLike('Loom Api', {
           prettyPrint: true,
         }),
       ),
@@ -45,8 +43,7 @@ const loggerOptions: LoggerOptions = {
       format: format.combine(
         format.timestamp(),
         format.ms(),
-        // TODO: change the app name to the app's/project's name
-        nestWinstonModuleUtilities.format.nestLike('Inventory Api', {
+        nestWinstonModuleUtilities.format.nestLike('Loom Api', {
           prettyPrint: true,
         }),
       ),

@@ -1,5 +1,5 @@
 import { IShelf } from '@/features/shelves/interface/shelf.interface';
-
+export const BASE_URI = `http://localhost:8000/api/v1/`;
 export const books = [
   {
     id: 1,
@@ -421,7 +421,7 @@ export const books = [
 ];
 
 export const endpoints = {
-  BOOK: 'files/list_folder',
+  BOOK: `book`,
 };
 
 export const shelves: IShelf[] = Array.from({ length: 5 }, (_, i) => ({

@@ -35,9 +35,7 @@ export default async function RootLayout({
           defaultTheme='dark'
           disableTransitionOnChange
         >
-          <Wrapper>
-            <SessionSyncWrapper>{children}</SessionSyncWrapper>
-          </Wrapper>
+          <Wrapper>{children}</Wrapper>
         </ThemeProvider>
       </body>
     </html>

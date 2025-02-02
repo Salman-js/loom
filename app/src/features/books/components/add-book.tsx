@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -12,16 +12,16 @@ import {
 import { Album, Plus } from 'lucide-react';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
 import { FileUpload } from './file-upload';
+import { useAddBook } from '../api/api.books';
 
 export function AddBookDialog() {
   const [selectedFile, setSelectedFile] = useState<{
     file: File;
     cover?: string | undefined;
   } | null>(null);
-  const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const { isPending, mutateAsync, isSuccess } = useAddBook();
 
-  // Handle file input change
   const handleFileChange = (
     newFile: { file: File; cover?: string | undefined } | null
   ) => {
@@ -38,8 +38,12 @@ export function AddBookDialog() {
       setUploadError('Please upload a valid EPUB file.');
     }
   };
-
-  // Handle file upload submission
+  useEffect(() => {
+    if (isSuccess) {
+      setSelectedFile(null);
+      setUploadError(null);
+    }
+  }, [isSuccess]);
   const handleUpload = async () => {
     if (!selectedFile) {
       setUploadError('No file selected.');
@@ -47,28 +51,8 @@ export function AddBookDialog() {
     }
 
     const formData = new FormData();
-    // formData.append('files', selectedFiles);
-
-    try {
-      setUploading(true);
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const result = await response.json();
-      if (result.fileUrl) {
-        setUploadError(null);
-        alert(`File uploaded successfully! URL: ${result.fileUrl}`);
-      } else {
-        setUploadError('Upload failed. Please try again.');
-      }
-    } catch (error) {
-      console.log('Error: ', error);
-      setUploadError('Error during file upload.');
-    } finally {
-      setUploading(false);
-    }
+    formData.append('book', selectedFile.file);
+    await mutateAsync(formData);
   };
 
   return (
@@ -99,8 +83,8 @@ export function AddBookDialog() {
         <FileUpload onChange={(files) => handleFileChange(files)} />
         {uploadError && <p className='text-red-500 text-sm'>{uploadError}</p>}
         <DialogFooter>
-          <Button onClick={handleUpload} disabled={uploading}>
-            {uploading ? 'Uploading...' : 'Save'}
+          <Button onClick={handleUpload} disabled={isPending}>
+            {isPending ? 'Uploading...' : 'Save'}
           </Button>
         </DialogFooter>
       </DialogContent>
