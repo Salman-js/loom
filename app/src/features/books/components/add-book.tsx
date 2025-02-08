@@ -1,26 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Album, Plus } from 'lucide-react';
-import { SidebarMenuButton } from '@/components/ui/sidebar';
+import React, { useState } from 'react';
 import { FileUpload } from './file-upload';
 import { useAddBook } from '../api/api.books';
+import { AnimatePresence, motion } from 'framer-motion';
 
-export function AddBookDialog() {
+export function AddBookDialog({
+  open,
+  setOpen,
+}: {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const [selectedFile, setSelectedFile] = useState<{
     file: File;
-    cover?: string | undefined;
+    cover?: string;
+    title?: string;
+    author?: string;
+    description?: string;
   } | null>(null);
+  console.log('Open: ', open);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const { isPending, mutateAsync, isSuccess } = useAddBook();
+  const { isPending, mutateAsync, isSuccess } = useAddBook({
+    onSuccess: () => {
+      setSelectedFile(null);
+      setUploadError(null);
+      setClearFile(true);
+      setOpen(false);
+    },
+  });
 
   const handleFileChange = (
     newFile: { file: File; cover?: string | undefined } | null
@@ -38,12 +44,6 @@ export function AddBookDialog() {
       setUploadError('Please upload a valid EPUB file.');
     }
   };
-  useEffect(() => {
-    if (isSuccess) {
-      setSelectedFile(null);
-      setUploadError(null);
-    }
-  }, [isSuccess]);
   const handleUpload = async () => {
     if (!selectedFile) {
       setUploadError('No file selected.');
@@ -51,43 +51,39 @@ export function AddBookDialog() {
     }
 
     const formData = new FormData();
+    const cover = await fetch(selectedFile?.cover as string);
+    const coverBlob = await cover.blob();
     formData.append('book', selectedFile.file);
+    formData.append('cover', coverBlob);
+    formData.append('title', selectedFile.title || '');
+    formData.append('author', selectedFile.author || '');
+    formData.append('description', selectedFile.description || '');
+    console.log('FormData: ', formData.get('title'));
     await mutateAsync(formData);
   };
-
+  const [clearFile, setClearFile] = useState(false);
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <SidebarMenuButton
-          size='lg'
-          className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
-          tooltip='Shelves'
-        >
-          <div className='flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-accent'>
-            <Plus />
-          </div>
-          <div className='grid flex-1 text-left text-sm leading-tight'>
-            <span className='truncate font-semibold'>Add book</span>
-          </div>
-        </SidebarMenuButton>
-      </DialogTrigger>
-      <DialogContent className='w-4/5 lg:w-1/2' title='Add book'>
-        <DialogHeader>
-          <DialogTitle>Upload File</DialogTitle>
-          <DialogDescription>
-            Import or drag and drop your{' '}
-            <code className='bg-muted rounded-md px-1'>.epub</code> files. Click
-            save when you're done.
-          </DialogDescription>
-        </DialogHeader>
-        <FileUpload onChange={(files) => handleFileChange(files)} />
-        {uploadError && <p className='text-red-500 text-sm'>{uploadError}</p>}
-        <DialogFooter>
-          <Button onClick={handleUpload} disabled={isPending}>
-            {isPending ? 'Uploading...' : 'Save'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <AnimatePresence mode='wait'>
+      <motion.div
+        initial={{
+          scale: 0,
+        }}
+        animate={{
+          scale: 1,
+        }}
+        exit={{ scale: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        {open && (
+          <FileUpload
+            onChange={(files) => handleFileChange(files)}
+            clearFile={clearFile}
+            setClearFile={setClearFile}
+            onUpload={handleUpload}
+            loading={isPending}
+          />
+        )}
+      </motion.div>
+    </AnimatePresence>
   );
 }

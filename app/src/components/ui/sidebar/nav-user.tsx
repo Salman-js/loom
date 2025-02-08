@@ -35,9 +35,9 @@ import {
 } from '@/components/ui/sidebar';
 import { IUser } from '@/features/users/interface/user.interface';
 import { useRouter } from 'next/navigation';
-import { useAuth, useSignOut } from '@/features/auth/hooks/auth.hooks';
+import { useAuth, useSignOutV2 } from '@/features/auth/hooks/auth.hooks';
 import { useEffect, useMemo, useState } from 'react';
-import { useSession } from '@/lib/auth-client';
+import { useSession } from 'next-auth/react';
 
 export function NavUser() {
   const { isMobile } = useSidebar();
@@ -45,7 +45,7 @@ export function NavUser() {
     isPending: isSigningOut,
     mutate: signUserOut,
     isSuccess,
-  } = useSignOut();
+  } = useSignOutV2();
   const { data } = useSession();
   const user = useMemo(() => data?.user, [data]);
   const router = useRouter();

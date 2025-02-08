@@ -19,7 +19,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Library } from 'lucide-react';
 import { AddBookDialog } from '@/features/books/components/add-book';
-import { useSession } from '@/lib/auth-client';
+import { useSession } from 'next-auth/react';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data } = useSession();
@@ -52,9 +52,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarSeparator />
       <SidebarHeader>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <AddBookDialog />
-          </SidebarMenuItem>
           {user && (
             <SidebarMenuItem>
               <Link href='/shelves'>

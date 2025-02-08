@@ -10,42 +10,20 @@ datasource db {
 }
 
 model Book {
-  id        String   @id @default(uuid())
-  title     String
-  userId    String   @map("user_id")
-  coverId   String   @unique
-  epubId    String   @unique
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  cover     Cover    @relation("cover", fields: [coverId], references: [id])
-  epub      Epub     @relation("epub", fields: [epubId], references: [id])
-  shelves   Shelf[]  @relation("shelved_books")
+  id          String   @id @default(uuid())
+  title       String
+  author      String
+  description String?
+  genre       String?
+  publisher   String?
+  userId      String   @map("user_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  cover       String
+  path        String
+  shelves     Shelf[]  @relation("shelved_books")
 
   @@map("books")
-  @@schema("app")
-}
-
-model Epub {
-  id       String  @id @default(uuid())
-  fileName String
-  filePath String
-  fileSize String?
-  mimeType String?
-  book     Book?   @relation("epub")
-
-  @@map("epubs")
-  @@schema("app")
-}
-
-model Cover {
-  id       String  @id @default(uuid())
-  fileName String  @map("file_name")
-  filePath String  @map("file_path")
-  fileSize String? @map("file_size")
-  mimeType String? @map("mime_type")
-  book     Book?   @relation("cover")
-
-  @@map("images")
   @@schema("app")
 }
 

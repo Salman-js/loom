@@ -6,16 +6,25 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export async function getCover(
-  url: string | ArrayBuffer
-): Promise<string | null> {
+export async function getMetaData(url: string | ArrayBuffer): Promise<{
+  cover: string;
+  title: string;
+  author: string;
+  description: string;
+} | null> {
   try {
-    console.log('Attempting to load book from URL:', url);
     const book = ePub(url);
-    console.log('Book metadata:', book.packaging);
     const cover = await book.coverUrl();
-    console.log('Cover:', cover);
-    return cover || null;
+    const metaData = await book.loaded.metadata;
+    const title = metaData.title;
+    const author = metaData.creator;
+    const description = metaData.description;
+    return {
+      cover: cover as string,
+      title,
+      author,
+      description,
+    };
   } catch (error) {
     console.error('Error fetching cover:', error);
     return null;

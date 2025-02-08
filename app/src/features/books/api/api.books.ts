@@ -1,7 +1,7 @@
-import { useFetchQuery, useMutate } from '@/hooks/query.hooks';
+import { useFetchQuery, useMutate, usePagination } from '@/hooks/query.hooks';
 import { IBook } from '../interface/book.interface';
 import { endpoints } from '@/lib/constants';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, UseMutationOptions } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import {
   onErrorNotification,
@@ -27,25 +27,40 @@ export const useFetchBooks = (
   );
 };
 
-export const useAddBook = () => {
+export const useAddBook = ({
+  onSuccess: onCustomSuccess,
+  onError: onCustomError,
+}: {
+  onSuccess?: (data: { message: string }) => void;
+  onError?: (error: AxiosError | any) => void;
+}) => {
   const queryClient = useQueryClient();
   const onError = (error: AxiosError | any) => {
     onErrorNotification(error);
+    onCustomError?.(error);
   };
-  const onSuccess = (data: any) => {
-    // console.log(data);
+  const onSuccess = (data: { message: string }) => {
     queryClient.invalidateQueries({
       queryKey: ['books'],
     });
-    onSuccessNotification(data);
+    onSuccessNotification({
+      message: {
+        title: 'Book Added',
+        description: data.message,
+      },
+    });
+    onCustomSuccess?.(data);
   };
-  return useMutate<{ id: string; url: string }[], FormData>(
+  return useMutate<{ message: string }>(endpoints.BOOK, 'post', {
+    onSuccess,
+    onError,
+  });
+};
+
+export const useBookPagination = (queryParams?: Record<string, any>) => {
+  return usePagination(
     endpoints.BOOK,
-    'post',
-    {
-      onSuccess,
-      onError,
-    },
-    'multipart/form-data'
+    ['books', 'total', queryParams],
+    queryParams
   );
 };

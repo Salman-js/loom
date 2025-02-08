@@ -25,6 +25,7 @@ async function bootstrap() {
       'X-Requested-With',
       'Accept',
       'refreshtoken',
+      'user-id',
     ],
     credentials: true,
   });

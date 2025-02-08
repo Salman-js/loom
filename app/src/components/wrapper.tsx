@@ -5,6 +5,9 @@ import SidebarContainer from '../app/ui/sidebar.container';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import NextTopLoader from 'nextjs-toploader';
 import { useTheme } from 'next-themes';
+import { useAuth } from '@/features/auth/hooks/auth.hooks';
+import { useSession } from 'next-auth/react';
+import { useEffect, useMemo } from 'react';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,6 +22,14 @@ export default function Wrapper({
   children: React.ReactNode;
 }>) {
   const { theme } = useTheme();
+  const { user, setUser, setToken } = useAuth();
+  const { data: session } = useSession();
+  const sessionUser = useMemo(() => session?.user, [session]);
+  useEffect(() => {
+    if (sessionUser && !user) {
+      setUser(sessionUser);
+    }
+  }, [sessionUser]);
   return (
     <SidebarProvider>
       <NextTopLoader color={theme === 'light' ? '#18181b' : '#fafafa'} />

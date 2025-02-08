@@ -113,7 +113,15 @@ body {
   @apply absolute bottom-0 left-0 w-full lg:h-0 h-full flex flex-row justify-between items-end transition-all lg:opacity-0 opacity-100 duration-300 ease-in-out p-4 bg-gradient-to-b from-transparent to-zinc-900;
 }
 
-.book-card:hover .card-detail-container {
+.add-book-card-container {
+  @apply w-full h-full flex flex-col justify-between p-4 transition ease-in-out;
+}
+
+.add-book-card-detail-container {
+  @apply absolute bottom-0 left-0 w-full lg:h-0 h-full flex flex-col justify-between items-center transition-all lg:opacity-0 opacity-100 duration-300 ease-in-out p-4 bg-gradient-to-b from-transparent to-zinc-900;
+}
+.book-card:hover .card-detail-container,
+.book-card:hover .add-book-card-detail-container {
   @apply h-full lg:bg-gradient-to-b from-transparent to-zinc-900 opacity-100;
 }
 

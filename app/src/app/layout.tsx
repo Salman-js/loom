@@ -3,7 +3,9 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import Wrapper from '../components/wrapper';
 import { ThemeProvider } from '@/components/theme-provider';
-import SessionSyncWrapper from './ui/session-sync.wrapper';
+import { SessionProvider } from 'next-auth/react';
+import { auth } from '@/lib/auth';
+import { Toaster } from 'sonner';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -25,18 +27,22 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
   return (
     <html lang='en'>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute='class'
-          defaultTheme='dark'
-          disableTransitionOnChange
-        >
-          <Wrapper>{children}</Wrapper>
-        </ThemeProvider>
+        <SessionProvider session={session}>
+          <ThemeProvider
+            attribute='class'
+            defaultTheme='dark'
+            disableTransitionOnChange
+          >
+            <Wrapper>{children}</Wrapper>
+            <Toaster />
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );

@@ -2,7 +2,7 @@
 import { AppSidebar } from '@/components/ui/sidebar/main';
 import { useAuth } from '@/features/auth/hooks/auth.hooks';
 import { BookSidebar } from '@/features/books/components/Sidebar';
-import { useSession } from '@/lib/auth-client';
+import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useMemo } from 'react';
 

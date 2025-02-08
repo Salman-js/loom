@@ -1,22 +1,21 @@
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
+
 import { AxiosError } from 'axios';
 
 export const onErrorNotification = (error: AxiosError | any) => {
-  console.log(error);
-  toast({
-    title: 'Error',
-    content: error?.response?.data.message || 'An error occurred',
+  return toast('Error', {
+    description: error?.response?.data.message || 'An error occurred',
   });
 };
 
-export const onSuccessNotification = <T>(data: T | any, message?: string) => {
-  toast({
-    title: 'Success',
-    content: message
-      ? message
-      : data?.message
-      ? data?.message
-      : 'action was successful',
-    color: 'green',
+export const onSuccessNotification = <T>(data: {
+  data?: T | any;
+  message?: {
+    title: string;
+    description: string;
+  };
+}) => {
+  return toast(data?.message?.title ?? 'Success', {
+    description: data?.message?.description ?? 'action was successful',
   });
 };

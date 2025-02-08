@@ -1,4 +1,3 @@
-import { books } from '@/lib/constants';
 import React, { useEffect, useId, useRef, useState } from 'react';
 import { useSidebar } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
@@ -14,12 +13,15 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useRouter } from 'next/navigation';
 import AnimatedCircularProgressBar from '@/components/ui/animated-circular-progress-bar';
 import Link from 'next/link';
+import { AddBookDialog } from './add-book';
 
 type booksProps = {
-  searchText: string;
+  books: IBook[];
+  addingNew: boolean;
+  setAddingNew: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const Books: React.FC<booksProps> = ({ searchText }) => {
+const Books: React.FC<booksProps> = ({ books, addingNew, setAddingNew }) => {
   const { state } = useSidebar();
   const [active, setActive] = useState<IBook | boolean | null>(null);
   const isMobile = useIsMobile();
@@ -47,9 +49,6 @@ const Books: React.FC<booksProps> = ({ searchText }) => {
   useEffect(() => {
     if (isMobile) setActive(null);
   }, [isMobile]);
-  useEffect(() => {
-    setActive(null);
-  }, [searchText]);
   return (
     <>
       <AnimatePresence>
@@ -77,7 +76,7 @@ const Books: React.FC<booksProps> = ({ searchText }) => {
             >
               <div className='w-1/2 h-full'>
                 <motion.img
-                  src={active.image}
+                  src={active.cover}
                   layoutId={`img-${active.id}`}
                   className='h-full w-full rounded-2xl'
                 ></motion.img>
@@ -160,68 +159,60 @@ const Books: React.FC<booksProps> = ({ searchText }) => {
             : 'lg:grid-cols-5 md:grid-cols-4'
         )}
       >
-        {books
-          .filter(
-            (book) =>
-              book.title.toLowerCase().includes(searchText.toLowerCase()) ||
-              book.author.toLowerCase().includes(searchText.toLowerCase()) ||
-              book.description.toLowerCase().includes(searchText.toLowerCase())
-          )
-          .map((book) => (
-            <motion.div
-              layoutId={`book-card-${book.id}`}
-              className='book-card group'
-              style={{
-                height: state === 'expanded' ? '33em' : '30em',
-              }}
-              onClick={() =>
-                isMobile ? router.push(`/book/${book.id}`) : setActive(book)
-              }
-              key={book.id}
-            >
-              <motion.img
-                src={book.image}
-                layoutId={`img-${book.id}`}
-                className='h-full w-full absolute'
-              ></motion.img>
-              <div className='card-container'>
-                <div className='card-detail-container'>
-                  <div className='text-container'>
-                    <motion.p
-                      layoutId={`title-${book.id}`}
-                      className='font-semibold text-gray-100 text-3xl'
-                    >
-                      {book.title}
-                    </motion.p>
-                    <motion.p
-                      layoutId={`description-${book.id}`}
-                      className='text-base text-gray-300 text-ellipsis line-clamp-6'
-                    >
-                      {book.description}
-                    </motion.p>
-                    <motion.div
-                      layoutId={`add-to-shelf-${book.id}`}
-                    ></motion.div>
-                  </div>
-                  <motion.div
-                    layoutId={`progress-${book.id}`}
-                    className='w-[15%] flex flex-row justify-end bg-muted-background'
+        {addingNew && <AddBookDialog open={addingNew} setOpen={setAddingNew} />}
+        {books.map((book) => (
+          <motion.div
+            layoutId={`book-card-${book.id}`}
+            className='book-card group'
+            style={{
+              height: state === 'expanded' ? '33em' : '30em',
+            }}
+            onClick={() =>
+              isMobile ? router.push(`/book/${book.id}`) : setActive(book)
+            }
+            key={book.id}
+          >
+            <motion.img
+              src={book.cover}
+              layoutId={`img-${book.id}`}
+              className='h-full w-full absolute'
+            ></motion.img>
+            <div className='card-container'>
+              <div className='card-detail-container'>
+                <div className='text-container'>
+                  <motion.p
+                    layoutId={`title-${book.id}`}
+                    className='font-semibold text-gray-100 text-3xl'
                   >
-                    <AnimatedCircularProgressBar
-                      max={100}
-                      min={0}
-                      value={50}
-                      className='size-30'
-                      gaugePrimaryClassName='stroke-green-500'
-                      textClassName='text-white text-sm'
-                      suffixClassName='text-xs'
-                      suffix='%'
-                    />
-                  </motion.div>
+                    {book.title}
+                  </motion.p>
+                  <motion.p
+                    layoutId={`description-${book.id}`}
+                    className='text-base text-gray-300 text-ellipsis line-clamp-6'
+                  >
+                    {book.description}
+                  </motion.p>
+                  <motion.div layoutId={`add-to-shelf-${book.id}`}></motion.div>
                 </div>
+                <motion.div
+                  layoutId={`progress-${book.id}`}
+                  className='w-[15%] flex flex-row justify-end bg-muted-background'
+                >
+                  <AnimatedCircularProgressBar
+                    max={100}
+                    min={0}
+                    value={50}
+                    className='size-30'
+                    gaugePrimaryClassName='stroke-green-500'
+                    textClassName='text-white text-sm'
+                    suffixClassName='text-xs'
+                    suffix='%'
+                  />
+                </motion.div>
               </div>
-            </motion.div>
-          ))}
+            </div>
+          </motion.div>
+        ))}
       </main>
     </>
   );

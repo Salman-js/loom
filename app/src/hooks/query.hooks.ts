@@ -1,4 +1,4 @@
-import { useSession } from '@/lib/auth-client';
+import { useAuth } from '@/features/auth/hooks/auth.hooks';
 import { BASE_URI } from '@/lib/constants';
 import {
   QueryKey,
@@ -7,7 +7,8 @@ import {
   useQuery,
   UseQueryOptions,
 } from '@tanstack/react-query';
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosHeaders, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { useEffect, useState } from 'react';
 
 type Method = 'get' | 'post' | 'put' | 'delete' | 'patch';
 const createAxiosInstance = () => {
@@ -22,15 +23,20 @@ export const useMutate = <TData = any, TVariables = any>(
   mutationOptions?: UseMutationOptions<TData, any, TVariables, unknown>,
   contentTypes?: string | string[]
 ) => {
+  const { user } = useAuth();
   const axiosInstance = createAxiosInstance();
   const mutationFn = async (variables: TVariables) => {
+    const isFormData = variables instanceof FormData;
     const config: AxiosRequestConfig = {
       method,
       url,
       data: variables,
       headers: {
-        'Content-Type': contentTypes ?? 'application/json',
-        Authorization: 'Bearer ' + window.localStorage.getItem('bearer_token'),
+        ...(isFormData
+          ? {}
+          : { 'Content-Type': contentTypes ?? 'application/json' }),
+        // Authorization: 'Bearer ' + window.localStorage.getItem('bearer_token'),
+        'user-id': user?.id,
       },
     };
     const response = await axiosInstance(config);
@@ -50,13 +56,15 @@ export function useFetchQuery<TData = any>(
   queryOptions?: UseQueryOptions<TData>
 ) {
   const axiosInstance = createAxiosInstance();
+  const { user } = useAuth();
   const queryFn = async (): Promise<TData> => {
     return await axiosInstance
       .get(url, {
         params: queryParams,
         headers: {
-          Authorization:
-            'Bearer ' + window.localStorage.getItem('bearer_token'),
+          // Authorization:
+          //   'Bearer ' + window.localStorage.getItem('bearer_token'),
+          'user-id': user?.id,
         },
       })
       .then((res: AxiosResponse<TData>) => res.data);
@@ -64,3 +72,46 @@ export function useFetchQuery<TData = any>(
 
   return useQuery<TData>({ ...queryOptions, queryKey, queryFn });
 }
+
+export const usePagination = (
+  url: string,
+  queryKey: QueryKey,
+  queryParams?: Record<string, any>,
+  initSize?: number
+) => {
+  const [size, setSize] = useState(initSize ?? 100);
+  const [pages, setPages] = useState(1);
+  const [page, setPage] = useState(1);
+  const totalSize = useTotalSize(url + '/total_count', queryKey, queryParams);
+  useEffect(() => {
+    if (totalSize) {
+      setPages(Math.ceil(totalSize / size));
+    }
+  }, [totalSize, size]);
+  return {
+    size,
+    setSize,
+    pages,
+    setPages,
+    page,
+    setPage,
+  };
+};
+
+export const useTotalSize = (
+  url: string,
+  queryKey: QueryKey,
+  queryParams?: Record<string, any>
+): number => {
+  const [totalSize, setTotalSize] = useState(0);
+  const { data, refetch } = useFetchQuery<number>(url, queryKey, queryParams);
+  useEffect(() => {
+    if (data) {
+      setTotalSize(typeof data === 'number' ? data : 0);
+    }
+  }, [data]);
+  useEffect(() => {
+    refetch();
+  }, [queryParams]);
+  return totalSize;
+};
