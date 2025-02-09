@@ -1,4 +1,5 @@
-import { IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsDateString, IsOptional, IsString } from 'class-validator';
 
 export class CreateBookDto {
   @IsString()
@@ -9,5 +10,10 @@ export class CreateBookDto {
 
   @IsOptional()
   @IsString()
-  description?: string;
+  publisher?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => (value ? new Date(value).toISOString() : null))
+  @IsDateString()
+  publishDate?: string;
 }

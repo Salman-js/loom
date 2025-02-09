@@ -26,7 +26,17 @@ export const useFetchBooks = (
     queryParams
   );
 };
-
+export const useFetchBookById = (id?: string) => {
+  return useFetchQuery<IBook>(
+    endpoints.BOOK + `/${id}`,
+    ['books', id],
+    {},
+    {
+      enabled: !!id,
+      queryKey: ['books', id],
+    }
+  );
+};
 export const useAddBook = ({
   onSuccess: onCustomSuccess,
   onError: onCustomError,
@@ -36,7 +46,25 @@ export const useAddBook = ({
 }) => {
   const queryClient = useQueryClient();
   const onError = (error: AxiosError | any) => {
-    onErrorNotification(error);
+    const errorMessageObject = (): {
+      title: string;
+      description: string;
+    } | null => {
+      let errorMessage;
+      switch (error.status) {
+        case 409:
+          errorMessage = {
+            title: '📖Book already exists',
+            description: error.response.data.message,
+          };
+          break;
+        default:
+          errorMessage = null;
+          break;
+      }
+      return errorMessage;
+    };
+    onErrorNotification(errorMessageObject() || error);
     onCustomError?.(error);
   };
   const onSuccess = (data: { message: string }) => {
@@ -45,7 +73,7 @@ export const useAddBook = ({
     });
     onSuccessNotification({
       message: {
-        title: 'Book Added',
+        title: '📖Book Added',
         description: data.message,
       },
     });

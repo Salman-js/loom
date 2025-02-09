@@ -3,8 +3,11 @@ import { toast } from 'sonner';
 import { AxiosError } from 'axios';
 
 export const onErrorNotification = (error: AxiosError | any) => {
-  return toast('Error', {
-    description: error?.response?.data.message || 'An error occurred',
+  return toast(error?.title ?? 'Error', {
+    description:
+      error?.description ||
+      error?.response?.data?.message ||
+      'An error occurred',
   });
 };
 

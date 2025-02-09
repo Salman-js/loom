@@ -2,7 +2,7 @@ import { cn, getMetaData } from '@/lib/utils';
 import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useDropzone } from 'react-dropzone';
-import { Loader2, Upload, X } from 'lucide-react';
+import { Download, Loader2, Upload, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSidebar } from '@/components/ui/sidebar';
 
@@ -12,19 +12,22 @@ export const FileUpload = ({
   setClearFile,
   onUpload,
   loading = false,
+  onCancel,
 }: {
   onChange?: (files: { file: File; cover?: string | undefined } | null) => void;
   clearFile?: boolean;
   setClearFile?: React.Dispatch<React.SetStateAction<boolean>>;
   onUpload: () => void;
   loading?: boolean;
+  onCancel: () => void;
 }) => {
   const [file, setFile] = useState<{
     file: File;
     cover?: string;
     title?: string;
     author?: string;
-    description?: string;
+    publishDate?: string;
+    publisher?: string;
   } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -144,9 +147,6 @@ export const FileUpload = ({
                     <p className='font-semibold text-gray-100 text-3xl'>
                       {file.title}
                     </p>
-                    <p className='text-base text-gray-300 text-ellipsis line-clamp-6'>
-                      {file.description}
-                    </p>
                   </div>
                 </div>
               </div>
@@ -155,9 +155,9 @@ export const FileUpload = ({
         )}
         {!file && (
           <div
-            className='book-card group flex flex-col justify-center items-center bg-secondary'
+            className='book-card group flex flex-col justify-center items-center bg-secondary space-y-4'
             style={{
-              height: '33em',
+              height: state === 'expanded' ? '33em' : '30em',
             }}
           >
             <motion.div
@@ -175,7 +175,7 @@ export const FileUpload = ({
                 duration: 0.5,
               }}
               className={cn(
-                'relative group-hover/file:shadow-2xl z-40 bg-white dark:bg-neutral-900 flex items-center justify-center h-36 mt-4 w-full max-w-[8rem] mx-auto rounded-md'
+                'relative group-hover/file:shadow-2xl z-40 p-8 rounded-full bg-background dark:bg-neutral-900 flex items-center justify-center'
               )}
             >
               {isDragActive ? (
@@ -185,12 +185,28 @@ export const FileUpload = ({
                   className='text-neutral-600 flex flex-col items-center'
                 >
                   Drop it
-                  <Upload className='h-4 w-4 text-neutral-600 dark:text-neutral-400' />
+                  <Upload className='h-10 w-10 text-neutral-600 dark:text-neutral-400' />
                 </motion.p>
               ) : (
-                <Upload className='h-4 w-4 text-neutral-600 dark:text-neutral-300' />
+                <Download className='h-10 w-10 text-neutral-600 dark:text-neutral-300' />
               )}
             </motion.div>
+
+            <div
+              className='p-8 rounded-full bg-background'
+              onClick={(e) => {
+                e.stopPropagation();
+                onCancel();
+              }}
+            >
+              <X
+                className={`h-10 w-10 ${
+                  loading ? 'text-neutral-300' : 'text-neutral-600'
+                } ${
+                  loading ? 'dark:text-neutral-600' : 'dark:text-neutral-300'
+                }`}
+              />
+            </div>
           </div>
         )}
       </motion.div>

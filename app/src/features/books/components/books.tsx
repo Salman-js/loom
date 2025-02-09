@@ -116,19 +116,13 @@ const Books: React.FC<booksProps> = ({ books, addingNew, setAddingNew }) => {
                     className='text-muted-foreground bg-muted rounded-full p-2 px-3'
                     size='sm'
                   >
-                    <Calendar1 /> {dayjs().subtract(2, 'years').format('YYYY')}
+                    <Calendar1 /> {dayjs(active.publishDate).format('YYYY')}
                   </Button>
                   <Button
                     className='text-muted-foreground bg-muted rounded-full p-2 px-3'
                     size='sm'
                   >
-                    Thriller
-                  </Button>
-                  <Button
-                    className='text-muted-foreground bg-muted rounded-full p-2 px-3'
-                    size='sm'
-                  >
-                    Drama
+                    {active.genre}
                   </Button>
                 </div>
                 <div className='flex flex-row justify-start items-center gap-3 mt-4'>

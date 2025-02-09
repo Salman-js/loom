@@ -10,7 +10,8 @@ export async function getMetaData(url: string | ArrayBuffer): Promise<{
   cover: string;
   title: string;
   author: string;
-  description: string;
+  publishDate: string;
+  publisher: string;
 } | null> {
   try {
     const book = ePub(url);
@@ -18,12 +19,14 @@ export async function getMetaData(url: string | ArrayBuffer): Promise<{
     const metaData = await book.loaded.metadata;
     const title = metaData.title;
     const author = metaData.creator;
-    const description = metaData.description;
+    const publishDate = metaData.pubdate;
+    const publisher = metaData.publisher;
     return {
       cover: cover as string,
       title,
       author,
-      description,
+      publishDate,
+      publisher,
     };
   } catch (error) {
     console.error('Error fetching cover:', error);

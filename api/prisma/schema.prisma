@@ -10,19 +10,22 @@ datasource db {
 }
 
 model Book {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   title       String
   author      String
-  description String?
+  description String?   @db.VarChar(1000)
   genre       String?
   publisher   String?
-  userId      String   @map("user_id")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  publishDate DateTime?
+  userId      String    @map("user_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
   cover       String
   path        String
-  shelves     Shelf[]  @relation("shelved_books")
+  shelves     Shelf[]   @relation("shelved_books")
 
+  @@index([title, author])
+  @@index([genre])
   @@map("books")
   @@schema("app")
 }

@@ -8,6 +8,7 @@ import { useTheme } from 'next-themes';
 import { useAuth } from '@/features/auth/hooks/auth.hooks';
 import { useSession } from 'next-auth/react';
 import { useEffect, useMemo } from 'react';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,6 +37,7 @@ export default function Wrapper({
       <QueryClientProvider client={queryClient}>
         <SidebarContainer />
         <SidebarInset>{children}</SidebarInset>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
       <Toaster />
     </SidebarProvider>

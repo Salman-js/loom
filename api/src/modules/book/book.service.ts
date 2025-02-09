@@ -1,4 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import * as path from 'path';
 import * as fs from 'fs/promises';
 import { UpdateBookDto } from './dto/update-book.dto';
@@ -7,13 +13,14 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { QueryDto } from 'src/common/dtos/query.dto';
 import { Prisma } from '@prisma/client';
+import { AiService } from '../ai/ai.service';
 
 @Injectable()
 export class BookService {
   logger = new Logger(BookService.name);
-  const;
   constructor(
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
+    private readonly aiService: AiService,
   ) {}
   async create(
     file: Express.Multer.File,
@@ -24,7 +31,18 @@ export class BookService {
   ) {
     try {
       if (!file || !file.originalname) {
-        throw new Error('File is missing or does not have a filename');
+        throw new BadRequestException(
+          'File is missing or does not have a filename',
+        );
+      }
+      const existingBook = await this.txHost.tx.book.findFirst({
+        where: {
+          title: createBookDto.title,
+          userId,
+        },
+      });
+      if (existingBook) {
+        throw new ConflictException(existingBook?.title);
       }
       const baseName = `${userId}-${file.originalname?.replace('.epub', '')}-${Date.now()}`;
       const uploadsFolder = path.join(folderName + '/epubs');
@@ -33,9 +51,14 @@ export class BookService {
       await fs.mkdir(coversFolder, { recursive: true });
       const filePath = path.join(uploadsFolder, `${baseName}.epub`);
       const coverPath = path.join(coversFolder, `${baseName}.png`);
+      const descriptionAndGenre =
+        await this.aiService.generateDescription(createBookDto);
+
       const book = await this.txHost.tx.book.create({
         data: {
           ...createBookDto,
+          description: descriptionAndGenre?.description,
+          genre: descriptionAndGenre?.genre,
           cover: coverPath,
           path: filePath,
           userId,
@@ -97,6 +120,13 @@ export class BookService {
           : {
               createdAt: 'desc',
             },
+        include: {
+          shelves: {
+            select: {
+              id: true,
+            },
+          },
+        },
       });
       return books.map((book) => ({
         ...book,
@@ -109,15 +139,93 @@ export class BookService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} book`;
+  async count(userId: string, query: QueryDto) {
+    try {
+      const { search, sortBy, sortOrder } = query;
+      const where: Prisma.BookWhereInput = {
+        userId,
+      };
+
+      if (search) {
+        where.AND = {
+          OR: [
+            {
+              title: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+            {
+              author: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+            {
+              description: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        };
+      }
+
+      const books = await this.txHost.tx.book.count({
+        where,
+      });
+      return books;
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
+  async findOne(id: string) {
+    try {
+      const book = await this.txHost.tx.book.findFirst({
+        where: {
+          id,
+        },
+      });
+      if (!book) {
+        throw new NotFoundException('Book not found');
+      }
+      return {
+        ...book,
+        cover: this.host + book.cover,
+        bath: this.host + book.path,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
   }
 
-  update(id: number, updateBookDto: UpdateBookDto) {
+  update(id: string, updateBookDto: UpdateBookDto) {
     return `This action updates a #${id} book`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} book`;
+  async remove(id: string) {
+    try {
+      const book = await this.txHost.tx.book.findFirst({
+        where: {
+          id,
+        },
+      });
+      if (!book) {
+        throw new NotFoundException('Book not found');
+      }
+      // delete book file and cover picture saved inside uploads folder
+      await fs.unlink(book.path);
+      await fs.unlink(book.cover);
+      return this.txHost.tx.book.delete({
+        where: {
+          id,
+        },
+      });
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
   }
 }

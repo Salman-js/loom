@@ -15,7 +15,8 @@ export function AddBookDialog({
     cover?: string;
     title?: string;
     author?: string;
-    description?: string;
+    publishDate?: string;
+    publisher?: string;
   } | null>(null);
   console.log('Open: ', open);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -57,7 +58,8 @@ export function AddBookDialog({
     formData.append('cover', coverBlob);
     formData.append('title', selectedFile.title || '');
     formData.append('author', selectedFile.author || '');
-    formData.append('description', selectedFile.description || '');
+    formData.append('publishDate', selectedFile.publishDate || '');
+    formData.append('publisher', selectedFile.publisher || '');
     console.log('FormData: ', formData.get('title'));
     await mutateAsync(formData);
   };
@@ -74,15 +76,14 @@ export function AddBookDialog({
         exit={{ scale: 0 }}
         transition={{ duration: 0.3 }}
       >
-        {open && (
-          <FileUpload
-            onChange={(files) => handleFileChange(files)}
-            clearFile={clearFile}
-            setClearFile={setClearFile}
-            onUpload={handleUpload}
-            loading={isPending}
-          />
-        )}
+        <FileUpload
+          onChange={(files) => handleFileChange(files)}
+          clearFile={clearFile}
+          setClearFile={setClearFile}
+          onUpload={handleUpload}
+          loading={isPending}
+          onCancel={() => setOpen(false)}
+        />
       </motion.div>
     </AnimatePresence>
   );

@@ -15,9 +15,10 @@ import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './utils/filters/httpException.filter';
 import { DatabaseFilter } from './utils/filters/database.filter';
 import { BookModule } from './modules/book/book.module';
+import { AiModule } from './modules/ai/ai.module';
 
 @Module({
-  imports: [DatabaseModule, configModule, clsModule, FeatureModule, BookModule],
+  imports: [DatabaseModule, configModule, clsModule, FeatureModule, BookModule, AiModule],
   providers: [
     {
       provide: APP_FILTER,

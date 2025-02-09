@@ -1,4 +1,3 @@
-import { books } from '@/lib/constants';
 import { Bookmark, BookOpenText, Calendar1 } from 'lucide-react';
 import React from 'react';
 import dayjs from 'dayjs';
@@ -6,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import BookDescription from '@/features/books/components/BookDescription';
 import Header from '@/components/ui/header/book-header';
 import AddToShelfButton from '@/features/shelves/components/add-to-shelf';
+import { useFetchBookById } from '@/features/books/api/api.books';
 
 export default async function Page({
   params,
@@ -13,7 +13,7 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const id = (await params).id;
-  const book = books.find((book) => book.id === parseInt(id));
+  const { data: book, isLoading, refetch, error } = useFetchBookById(id);
 
   return (
     <div className='w-full'>
@@ -23,7 +23,7 @@ export default async function Page({
           <div className='w-full md:w-1/2 lg:w-[45%] lg:p-14 p-6 bg-muted'>
             <div className='w-full overflow-visible flex flex-row justify-center'>
               <img
-                src={book?.image as string}
+                src={book?.cover as string}
                 alt={book?.title as string}
                 className='w-full lg:max-w-[20em] max-w-max h-[50vh] shadow-lg'
               />
@@ -42,13 +42,10 @@ export default async function Page({
             </div>
             <div className='flex flex-row justify-start items-center gap-3'>
               <Button className='text-muted-foreground bg-muted rounded-full p-2 px-3'>
-                <Calendar1 /> {dayjs().subtract(2, 'years').format('YYYY')}
+                <Calendar1 /> {dayjs(book?.publishDate).format('YYYY')}
               </Button>
               <Button className='text-muted-foreground bg-muted rounded-full p-2 px-3'>
-                Thriller
-              </Button>
-              <Button className='text-muted-foreground bg-muted rounded-full p-2 px-3'>
-                Drama
+                {book?.genre}
               </Button>
             </div>
             <div className='flex flex-row justify-start items-center gap-3 mt-4'>
