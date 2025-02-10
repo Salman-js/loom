@@ -2,7 +2,7 @@ import { IShelf } from '@/features/shelves/interface/shelf.interface';
 import { File } from 'buffer';
 
 export interface IBook {
-  id: number;
+  id: string;
   author: string;
   title: string;
   cover?: string;

@@ -129,7 +129,7 @@ body {
 }
 
 .shelf-card {
-  @apply gap-2 overflow-hidden cursor-pointer rounded-xl;
+  @apply gap-2 overflow-hidden cursor-pointer rounded-xl transition ease-in-out;
 }
 @layer base {
   * {

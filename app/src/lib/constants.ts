@@ -422,10 +422,6 @@ export const books = [
 
 export const endpoints = {
   BOOK: `book`,
+  SHELF: `shelf`,
 };
 
-export const shelves: IShelf[] = Array.from({ length: 5 }, (_, i) => ({
-  books: books.filter((book, index) => index <= i),
-  id: i + 1,
-  name: `Shelf ${i + 1}`,
-}));

@@ -16,9 +16,10 @@ import { HttpExceptionFilter } from './utils/filters/httpException.filter';
 import { DatabaseFilter } from './utils/filters/database.filter';
 import { BookModule } from './modules/book/book.module';
 import { AiModule } from './modules/ai/ai.module';
+import { ShelfModule } from './modules/shelf/shelf.module';
 
 @Module({
-  imports: [DatabaseModule, configModule, clsModule, FeatureModule, BookModule, AiModule],
+  imports: [DatabaseModule, configModule, clsModule, FeatureModule, BookModule, AiModule, ShelfModule],
   providers: [
     {
       provide: APP_FILTER,

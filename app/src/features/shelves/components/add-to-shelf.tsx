@@ -2,7 +2,6 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Heart, LibraryBig, Plus, Search, Settings } from 'lucide-react';
-import { books, shelves } from '@/lib/constants';
 import { useToast } from '@/hooks/use-toast';
 import { ToastAction } from '@radix-ui/react-toast';
 import {
@@ -15,6 +14,8 @@ import {
 } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { useFetchBookById } from '@/features/books/api/api.books';
+import { useFetchShelvesLight } from '../api/api.shelves';
 
 type FavoriteButtonProps = {
   id: string;
@@ -26,7 +27,8 @@ const AddToShelfButton: React.FC<FavoriteButtonProps> = ({
   mini = false,
 }) => {
   const { toast } = useToast();
-  const book = books.find((book) => book.id === parseInt(id));
+  const { data: book, isLoading } = useFetchBookById(id);
+  const { data: shelves, isLoading: shelvesLoading } = useFetchShelvesLight();
   const [searchQuery, setSearchQuery] = React.useState('');
   return (
     <PopoverRoot>
@@ -60,7 +62,7 @@ const AddToShelfButton: React.FC<FavoriteButtonProps> = ({
         <PopoverBody className='p-0'>
           <div className='p-2'>
             {shelves
-              .filter((item) =>
+              ?.filter((item) =>
                 item.name.toLowerCase().includes(searchQuery.toLowerCase())
               )
               .map((item) => (

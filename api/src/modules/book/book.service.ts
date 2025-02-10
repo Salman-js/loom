@@ -22,6 +22,7 @@ export class BookService {
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     private readonly aiService: AiService,
   ) {}
+  host = process.env.HOST;
   async create(
     file: Express.Multer.File,
     cover: Express.Multer.File,
@@ -74,7 +75,6 @@ export class BookService {
       throw error;
     }
   }
-  host = process.env.HOST;
   async findAll(userId: string, query: QueryDto) {
     try {
       const { page = 1, search, size = 20, sortBy, sortOrder } = query;
@@ -131,7 +131,7 @@ export class BookService {
       return books.map((book) => ({
         ...book,
         cover: this.host + book.cover,
-        bath: this.host + book.path,
+        path: this.host + book.path,
       }));
     } catch (error) {
       this.logger.error(error);
@@ -180,6 +180,29 @@ export class BookService {
       throw error;
     }
   }
+
+  async findLight(userId: string) {
+    try {
+      const where: Prisma.BookWhereInput = {
+        userId,
+      };
+
+      const books = await this.txHost.tx.book.findMany({
+        where,
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+      return books.map((book) => ({
+        ...book,
+        cover: this.host + book.cover,
+        bath: this.host + book.path,
+      }));
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
   async findOne(id: string) {
     try {
       const book = await this.txHost.tx.book.findFirst({
@@ -193,7 +216,7 @@ export class BookService {
       return {
         ...book,
         cover: this.host + book.cover,
-        bath: this.host + book.path,
+        path: this.host + book.path,
       };
     } catch (error) {
       this.logger.error(error);
