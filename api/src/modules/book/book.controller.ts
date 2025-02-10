@@ -55,6 +55,10 @@ export class BookController {
     return this.bookService.count(userId, query);
   }
 
+  @Get('light')
+  findLight(@UserId() userId: string) {
+    return this.bookService.findLight(userId);
+  }
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.bookService.findOne(id);

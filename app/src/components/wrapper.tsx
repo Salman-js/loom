@@ -9,6 +9,8 @@ import { useAuth } from '@/features/auth/hooks/auth.hooks';
 import { useSession } from 'next-auth/react';
 import { useEffect, useMemo } from 'react';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import UnAuthorized from './ui/unauthorized';
+import { Loader2 } from 'lucide-react';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,13 +26,38 @@ export default function Wrapper({
 }>) {
   const { theme } = useTheme();
   const { user, setUser, setToken } = useAuth();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const sessionUser = useMemo(() => session?.user, [session]);
   useEffect(() => {
-    if (sessionUser && !user) {
+    if (sessionUser) {
       setUser(sessionUser);
     }
   }, [sessionUser]);
+  useEffect(() => {
+    if (
+      !session &&
+      status === 'unauthenticated' &&
+      window?.location?.pathname !== '/sign-in'
+    ) {
+      window.location.href = '/sign-in';
+    }
+  }, [status, session]);
+
+  if (status === 'loading') {
+    return (
+      <div className='grid min-h-full place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8'>
+        <Loader2 className='h-32 w-32 animate-spin' />
+      </div>
+    );
+  }
+
+  if (
+    !session &&
+    status === 'unauthenticated' &&
+    window?.location?.pathname !== '/sign-in'
+  ) {
+    return <UnAuthorized />;
+  }
   return (
     <SidebarProvider>
       <NextTopLoader color={theme === 'light' ? '#18181b' : '#fafafa'} />

@@ -1,5 +1,4 @@
 import { useFetchQuery, useMutate, usePagination } from '@/hooks/query.hooks';
-import { IBook } from '../interface/book.interface';
 import { endpoints } from '@/lib/constants';
 import { useQueryClient, UseMutationOptions } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -7,8 +6,9 @@ import {
   onErrorNotification,
   onSuccessNotification,
 } from '@/lib/notifications';
+import { IShelf } from '../interface/shelf.interface';
 
-export const useFetchBooks = (
+export const useFetchShelves = (
   page: number,
   size: number,
   filterOptions?: Record<string, any>
@@ -20,28 +20,30 @@ export const useFetchBooks = (
     ...(filter ? { ...filter } : {}),
     ...(search ? { search } : {}),
   };
-  return useFetchQuery<IBook[]>(
-    endpoints.BOOK,
-    ['books', queryParams],
+  return useFetchQuery<IShelf[]>(
+    endpoints.SHELF,
+    ['shelves', queryParams],
     queryParams
   );
 };
-
-export const useFetchBooksLight = () => {
-  return useFetchQuery<IBook[]>(endpoints.BOOK + `/light`, ['books', 'light']);
+export const useFetchShelvesLight = () => {
+  return useFetchQuery<IShelf[]>(endpoints.SHELF + `/light`, [
+    'shelves',
+    'light',
+  ]);
 };
-export const useFetchBookById = (id?: string) => {
-  return useFetchQuery<IBook>(
-    endpoints.BOOK + `/${id}`,
-    ['books', id],
+export const useFetchShelfById = (id?: string) => {
+  return useFetchQuery<IShelf>(
+    endpoints.SHELF + `/${id}`,
+    ['shelves', id],
     {},
     {
       enabled: !!id,
-      queryKey: ['books', id],
+      queryKey: ['shelves', id],
     }
   );
 };
-export const useAddBook = ({
+export const useAddShelf = ({
   onSuccess: onCustomSuccess,
   onError: onCustomError,
 }: {
@@ -58,7 +60,7 @@ export const useAddBook = ({
       switch (error.status) {
         case 409:
           errorMessage = {
-            title: '📖Book already exists',
+            title: '🗄️Shelf already exists',
             description: error.response.data.message,
           };
           break;
@@ -73,26 +75,26 @@ export const useAddBook = ({
   };
   const onSuccess = (data: { message: string }) => {
     queryClient.invalidateQueries({
-      queryKey: ['books'],
+      queryKey: ['shelves'],
     });
     onSuccessNotification({
       message: {
-        title: '📖Book Added',
+        title: '🗄️Shelf Added',
         description: data.message,
       },
     });
     onCustomSuccess?.(data);
   };
-  return useMutate<{ message: string }>(endpoints.BOOK, 'post', {
+  return useMutate<{ message: string }>(endpoints.SHELF, 'post', {
     onSuccess,
     onError,
   });
 };
 
-export const useBookPagination = (queryParams?: Record<string, any>) => {
+export const useShelfPagination = (queryParams?: Record<string, any>) => {
   return usePagination(
-    endpoints.BOOK,
-    ['books', 'total', queryParams],
+    endpoints.SHELF,
+    ['shelves', 'total', queryParams],
     queryParams
   );
 };

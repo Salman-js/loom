@@ -18,7 +18,6 @@ export function AddBookDialog({
     publishDate?: string;
     publisher?: string;
   } | null>(null);
-  console.log('Open: ', open);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const { isPending, mutateAsync, isSuccess } = useAddBook({
     onSuccess: () => {

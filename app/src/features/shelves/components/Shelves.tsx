@@ -1,14 +1,21 @@
-import { shelves } from '@/lib/constants';
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { useSidebar } from '@/components/ui/sidebar';
 import ShelfCard from './ShelfCard';
+import { IShelf } from '../interface/shelf.interface';
+import { AddShelfDialog } from './add-shelf';
 
 type ShelvesProps = {
-  searchText: string;
+  shelves: IShelf[];
+  addingNew: boolean;
+  setAddingNew: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const Shelves: React.FC<ShelvesProps> = ({ searchText }) => {
+const Shelves: React.FC<ShelvesProps> = ({
+  shelves,
+  addingNew,
+  setAddingNew,
+}) => {
   const { state } = useSidebar();
   return (
     <main
@@ -19,15 +26,10 @@ const Shelves: React.FC<ShelvesProps> = ({ searchText }) => {
           : 'lg:grid-cols-3 md:grid-cols-3'
       )}
     >
-      {shelves
-        .filter(
-          (shelf) =>
-            shelf.name.toLowerCase().includes(searchText.toLowerCase()) ||
-            shelf.description?.toLowerCase().includes(searchText.toLowerCase())
-        )
-        .map((shelf) => (
-          <ShelfCard shelf={shelf} key={shelf.id} />
-        ))}
+      {addingNew && <AddShelfDialog open={addingNew} setOpen={setAddingNew} />}
+      {shelves?.map((shelf) => (
+        <ShelfCard shelf={shelf} key={shelf.id} />
+      ))}
     </main>
   );
 };

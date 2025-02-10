@@ -31,12 +31,13 @@ model Book {
 }
 
 model Shelf {
-  id        String   @id @default(uuid())
-  name      String   @map("shelf_name")
-  userId    String   @map("user_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  books     Book[]   @relation("shelved_books")
+  id          String   @id @default(uuid())
+  name        String   @map("shelf_name")
+  description String?  @map("shelf_description")
+  userId      String   @map("user_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  books       Book[]   @relation("shelved_books")
 
   @@index([name, userId])
   @@map("shelves")
