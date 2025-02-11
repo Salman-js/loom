@@ -34,6 +34,7 @@ export default function Home() {
           books={data ?? []}
           addingNew={addBookDialogOpen}
           setAddingNew={setAddBookDialogOpen}
+          loading={isPending}
         />
       </div>
     </div>

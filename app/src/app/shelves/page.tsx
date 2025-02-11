@@ -34,6 +34,7 @@ export default function Home() {
           shelves={data ?? []}
           addingNew={addShelfDialogOpen}
           setAddingNew={setAddShelfDialogOpen}
+          loading={isPending}
         />
       </div>
     </div>

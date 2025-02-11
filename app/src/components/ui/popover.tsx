@@ -392,10 +392,11 @@ interface PopoverButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
   className?: string;
+  disabled?: boolean;
 }
 
 const PopoverButton = React.forwardRef<HTMLButtonElement, PopoverButtonProps>(
-  ({ children, onClick, className }, ref) => {
+  ({ children, onClick, className, disabled = false }, ref) => {
     return (
       <Button
         ref={ref}

@@ -91,6 +91,50 @@ export const useAddShelf = ({
   });
 };
 
+export const useAddBookToShelf = (
+  bookId: string,
+  mutationOptions?: UseMutationOptions<{ title: string; message: string }>
+) => {
+  const queryClient = useQueryClient();
+  const onError = (error: AxiosError | any) => {
+    const errorMessageObject = (): {
+      title: string;
+      description: string;
+    } | null => {
+      let errorMessage;
+      switch (error.status) {
+        default:
+          errorMessage = null;
+          break;
+      }
+      return errorMessage;
+    };
+    onErrorNotification(errorMessageObject() || error);
+  };
+  const onSuccess = (data: { title: string; message: string }) => {
+    queryClient.invalidateQueries({
+      queryKey: ['shelves'],
+    });
+    queryClient.invalidateQueries({
+      queryKey: ['books', bookId],
+    });
+    onSuccessNotification({
+      message: {
+        title: `📖${data.title}`,
+        description: data.message,
+      },
+    });
+  };
+  return useMutate<{ title: string; message: string }>(
+    endpoints.SHELF + `/add-book/${bookId}`,
+    'patch',
+    {
+      onSuccess,
+      onError,
+      ...mutationOptions,
+    }
+  );
+};
 export const useShelfPagination = (queryParams?: Record<string, any>) => {
   return usePagination(
     endpoints.SHELF,

@@ -6,6 +6,6 @@ export interface INewShelf {
 }
 
 export interface IShelf extends INewShelf {
-  id: number;
+  id: string;
   books: IBook[];
 }
