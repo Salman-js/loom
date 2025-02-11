@@ -17,7 +17,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Check, Loader2 } from 'lucide-react';
+import { Check, Loader2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSidebar } from '@/components/ui/sidebar';
 import { useFetchBooksLight } from '@/features/books/api/api.books';
@@ -79,10 +79,17 @@ export function AddShelfDialog({
             onSubmit={form.handleSubmit(onSubmit)}
             className={cn('space-y-3 cursor-pointer rounded-xl border p-4')}
           >
-            <div>
-              <p className='relative z-20 font-sans font-bold text-neutral-700 dark:text-neutral-300 text-base'>
-                Add New Shelf
-              </p>
+            <div className='w-full flex flex-row justify-between'>
+              <div>
+                <p className='relative z-20 font-sans font-bold text-neutral-700 dark:text-neutral-300 text-base'>
+                  Add New Shelf
+                </p>
+              </div>
+              <div>
+                <Button variant='link' onClick={() => setOpen(false)}>
+                  <X />
+                </Button>
+              </div>
             </div>
             <div
               className={cn(

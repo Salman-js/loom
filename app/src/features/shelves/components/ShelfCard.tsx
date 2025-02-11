@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Badge } from '../../../components/ui/badge';
 import { IShelf } from '../interface/shelf.interface';
 import { motion } from 'framer-motion';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type ShelfCardProps = {
   shelf: IShelf;
@@ -52,6 +53,36 @@ const ShelfCard: React.FC<ShelfCardProps> = ({ shelf }) => {
         <p className='text-lg text-muted-foreground text-ellipsis line-clamp-2'>
           {shelf.description}
         </p>
+      </div>
+    </motion.div>
+  );
+};
+
+export const LoadingCard = () => {
+  return (
+    <motion.div className='shelf-card border'>
+      <div className='grid grow grid-cols-2 h-[15em] gap-[2px]'>
+        <div className='h-full overflow-hidden'>
+          <Skeleton className='w-full h-full' />
+        </div>
+        <div className='h-full overflow-hidden space-y-[2px]'>
+          <div className='w-full h-1/2'>
+            <Skeleton className='w-full h-full' />
+          </div>
+          <div className='w-full h-1/2'>
+            <Skeleton className='w-full h-full' />
+          </div>
+        </div>
+      </div>
+      <div className='w-full p-4 space-y-3'>
+        <div className='w-full flex flex-row justify-between items-center'>
+          <div>
+            <Skeleton className='w-16 h-4 animate-pulse rounded-md' />
+          </div>
+          <Skeleton className='w-16 h-4 animate-pulse rounded-md' />
+        </div>
+        <Skeleton className='w-full h-4 animate-pulse rounded-md' />
+        <Skeleton className='w-full h-4 rounded-md' />
       </div>
     </motion.div>
   );

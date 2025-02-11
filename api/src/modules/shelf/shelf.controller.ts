@@ -33,6 +33,10 @@ export class ShelfController {
     return this.shelfService.count(userId, query);
   }
 
+  @Get('light')
+  findLight(@UserId() userId: string) {
+    return this.shelfService.findLight(userId);
+  }
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.shelfService.findOne(id);
@@ -41,6 +45,17 @@ export class ShelfController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateShelfDto: UpdateShelfDto) {
     return this.shelfService.update(id, updateShelfDto);
+  }
+
+  @Patch('add-book/:bookId')
+  addBookToShelf(
+    @Body()
+    shelfData: {
+      id: string;
+    },
+    @Param('bookId') bookId: string,
+  ) {
+    return this.shelfService.addBookToShelf(shelfData.id, bookId);
   }
 
   @Delete(':id')

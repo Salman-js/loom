@@ -1,7 +1,15 @@
 'use client';
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Heart, LibraryBig, Plus, Search, Settings } from 'lucide-react';
+import {
+  Check,
+  Heart,
+  LibraryBig,
+  Loader2,
+  Plus,
+  Search,
+  Settings,
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ToastAction } from '@radix-ui/react-toast';
 import {
@@ -15,7 +23,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { useFetchBookById } from '@/features/books/api/api.books';
-import { useFetchShelvesLight } from '../api/api.shelves';
+import { useAddBookToShelf, useFetchShelvesLight } from '../api/api.shelves';
 
 type FavoriteButtonProps = {
   id: string;
@@ -29,7 +37,13 @@ const AddToShelfButton: React.FC<FavoriteButtonProps> = ({
   const { toast } = useToast();
   const { data: book, isLoading } = useFetchBookById(id);
   const { data: shelves, isLoading: shelvesLoading } = useFetchShelvesLight();
+  const { mutateAsync, isPending } = useAddBookToShelf(id);
   const [searchQuery, setSearchQuery] = React.useState('');
+  const handleAddToShelf = async (shelfId: string) => {
+    await mutateAsync({
+      id: shelfId,
+    });
+  };
   return (
     <PopoverRoot>
       <PopoverTrigger
@@ -68,20 +82,32 @@ const AddToShelfButton: React.FC<FavoriteButtonProps> = ({
               .map((item) => (
                 <PopoverButton
                   key={item.name}
-                  onClick={() => console.log(`Clicked: ${item.name}`)}
+                  onClick={() => handleAddToShelf(item?.id)}
                   className='relative w-full justify-between px-2 py-1.5 text-sm font-normal'
+                  disabled={isPending}
                 >
                   <div className='flex just items-center gap-3'>
                     <span>{item.name}</span>
                   </div>
-                  {item.books && (
-                    <Badge
-                      variant='secondary'
-                      className='ml-auto h-5 px-1.5 text-xs'
-                    >
-                      {item.books?.length} books
-                    </Badge>
-                  )}
+                  <div className='flex flex-row space-x-2 items-center'>
+                    {item.books.some((book) => book.id === id) && (
+                      <>
+                        {isPending ? (
+                          <Loader2 className='h-4 w-4 animate-spin' />
+                        ) : (
+                          <Check className='h-4 w-4' />
+                        )}
+                      </>
+                    )}
+                    {item.books && (
+                      <Badge
+                        variant='secondary'
+                        className='ml-auto h-5 px-1.5 text-xs'
+                      >
+                        {item.books?.length} books
+                      </Badge>
+                    )}
+                  </div>
                 </PopoverButton>
               ))}
           </div>

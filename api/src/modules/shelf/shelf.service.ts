@@ -157,6 +157,32 @@ export class ShelfService {
       throw error;
     }
   }
+
+  async findLight(userId: string) {
+    try {
+      const where: Prisma.ShelfWhereInput = {
+        userId,
+      };
+
+      const shelves = await this.txHost.tx.shelf.findMany({
+        where,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        include: {
+          books: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+      return shelves;
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
   async findOne(id: string) {
     try {
       const shelf = await this.txHost.tx.shelf.findFirst({
@@ -176,6 +202,59 @@ export class ShelfService {
           ...book,
           cover: (this.host + book.cover).replace(/\\/g, '/'),
         })),
+      };
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
+
+  async addBookToShelf(id: string, bookId: string) {
+    try {
+      const book = await this.txHost.tx.book.findFirst({
+        where: {
+          id: bookId,
+        },
+      });
+      const shelf = await this.txHost.tx.shelf.findFirst({
+        where: {
+          id,
+        },
+        include: {
+          books: {
+            where: {
+              id: bookId,
+            },
+            select: {
+              id: true,
+              title: true,
+            },
+          },
+        },
+      });
+      if (!shelf) {
+        throw new NotFoundException('Shelf not found');
+      }
+      if (!book) {
+        throw new NotFoundException('Book not found');
+      }
+      await this.txHost.tx.shelf.update({
+        where: { id },
+        data: {
+          books:
+            shelf.books.length > 0
+              ? {
+                  disconnect: { id: bookId },
+                }
+              : { connect: { id: bookId } },
+        },
+      });
+      return {
+        title:
+          shelf.books.length > 0
+            ? 'Book Removed from Shelf'
+            : 'Book Added to Shelf',
+        message: shelf.name,
       };
     } catch (error) {
       this.logger.error(error);

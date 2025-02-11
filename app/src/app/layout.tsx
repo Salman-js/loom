@@ -34,11 +34,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SessionProvider session={session}>
-          <ThemeProvider
-            attribute='class'
-            defaultTheme='dark'
-            disableTransitionOnChange
-          >
+          <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
             <Wrapper>{children}</Wrapper>
             <Toaster />
           </ThemeProvider>

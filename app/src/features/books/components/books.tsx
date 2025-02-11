@@ -14,16 +14,27 @@ import { useRouter } from 'next/navigation';
 import AnimatedCircularProgressBar from '@/components/ui/animated-circular-progress-bar';
 import Link from 'next/link';
 import { AddBookDialog } from './add-book';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useFetchBookById } from '../api/api.books';
 
 type booksProps = {
   books: IBook[];
   addingNew: boolean;
   setAddingNew: React.Dispatch<React.SetStateAction<boolean>>;
+  loading?: boolean;
 };
 
-const Books: React.FC<booksProps> = ({ books, addingNew, setAddingNew }) => {
+const Books: React.FC<booksProps> = ({
+  books,
+  addingNew,
+  setAddingNew,
+  loading = true,
+}) => {
   const { state } = useSidebar();
   const [active, setActive] = useState<IBook | boolean | null>(null);
+  const { data: selectedBook } = useFetchBookById(
+    (active as IBook)?.id ?? null
+  );
   const isMobile = useIsMobile();
   const id = useId();
   const ref = useRef<HTMLDivElement>(null);
@@ -154,61 +165,87 @@ const Books: React.FC<booksProps> = ({ books, addingNew, setAddingNew }) => {
         )}
       >
         {addingNew && <AddBookDialog open={addingNew} setOpen={setAddingNew} />}
-        {books.map((book) => (
-          <motion.div
-            layoutId={`book-card-${book.id}`}
-            className='book-card group'
-            style={{
-              height: state === 'expanded' ? '33em' : '30em',
-            }}
-            onClick={() =>
-              isMobile ? router.push(`/book/${book.id}`) : setActive(book)
-            }
-            key={book.id}
-          >
-            <motion.img
-              src={book.cover}
-              layoutId={`img-${book.id}`}
-              className='h-full w-full absolute'
-            ></motion.img>
-            <div className='card-container'>
-              <div className='card-detail-container'>
-                <div className='text-container'>
-                  <motion.p
-                    layoutId={`title-${book.id}`}
-                    className='font-semibold text-gray-100 text-3xl'
-                  >
-                    {book.title}
-                  </motion.p>
-                  <motion.p
-                    layoutId={`description-${book.id}`}
-                    className='text-base text-gray-300 text-ellipsis line-clamp-6'
-                  >
-                    {book.description}
-                  </motion.p>
-                  <motion.div layoutId={`add-to-shelf-${book.id}`}></motion.div>
+        {loading
+          ? Array.from({ length: state === 'expanded' ? 4 : 5 }).map(
+              (_, index) => <LoadingCard key={index} />
+            )
+          : books?.map((book) => (
+              <motion.div
+                layoutId={`book-card-${book.id}`}
+                className='book-card group'
+                style={{
+                  height: state === 'expanded' ? '33em' : '30em',
+                }}
+                onClick={() =>
+                  isMobile ? router.push(`/book/${book.id}`) : setActive(book)
+                }
+                key={book.id}
+              >
+                <motion.img
+                  src={book.cover}
+                  layoutId={`img-${book.id}`}
+                  className='h-full w-full absolute'
+                ></motion.img>
+                <div className='card-container'>
+                  <div className='card-detail-container'>
+                    <div className='text-container'>
+                      <motion.p
+                        layoutId={`title-${book.id}`}
+                        className='font-semibold text-gray-100 text-3xl'
+                      >
+                        {book.title}
+                      </motion.p>
+                      <motion.p
+                        layoutId={`description-${book.id}`}
+                        className='text-base text-gray-300 text-ellipsis line-clamp-6'
+                      >
+                        {book.description}
+                      </motion.p>
+                      <motion.div
+                        layoutId={`add-to-shelf-${book.id}`}
+                      ></motion.div>
+                    </div>
+                    <motion.div
+                      layoutId={`progress-${book.id}`}
+                      className='w-[15%] flex flex-row justify-end bg-muted-background'
+                    >
+                      <AnimatedCircularProgressBar
+                        max={100}
+                        min={0}
+                        value={50}
+                        className='size-30'
+                        gaugePrimaryClassName='stroke-green-500'
+                        textClassName='text-white text-sm'
+                        suffixClassName='text-xs'
+                        suffix='%'
+                      />
+                    </motion.div>
+                  </div>
                 </div>
-                <motion.div
-                  layoutId={`progress-${book.id}`}
-                  className='w-[15%] flex flex-row justify-end bg-muted-background'
-                >
-                  <AnimatedCircularProgressBar
-                    max={100}
-                    min={0}
-                    value={50}
-                    className='size-30'
-                    gaugePrimaryClassName='stroke-green-500'
-                    textClassName='text-white text-sm'
-                    suffixClassName='text-xs'
-                    suffix='%'
-                  />
-                </motion.div>
-              </div>
-            </div>
-          </motion.div>
-        ))}
+              </motion.div>
+            ))}
       </main>
     </>
+  );
+};
+
+export const LoadingCard = () => {
+  return (
+    <div className='add-book-card bg-muted animate-pulse h-[33em] rounded-2xl'>
+      <div className='add-book-card-container'>
+        <div></div>
+        <div className='add-card-detail-container space-y-4'>
+          <div className='text-container'>
+            <Skeleton className='h-8 w-full' />
+          </div>
+          <div className='flex flex-col space-y-2 justify-start bg-muted-background'>
+            <Skeleton className='h-3 w-full' />
+            <Skeleton className='h-3 w-full' />
+            <Skeleton className='h-3 w-1/2' />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 export default Books;
