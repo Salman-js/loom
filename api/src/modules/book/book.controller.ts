@@ -13,7 +13,12 @@ import {
   Query,
 } from '@nestjs/common';
 import { BookService } from './book.service';
-import { CreateBookDto } from './dto/create-book.dto';
+import {
+  CreateBookDto,
+  CreateBookmarkDto,
+  CreateHighlightDto,
+  CreateNoteDto,
+} from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import {
   FileFieldsInterceptor,
@@ -59,14 +64,46 @@ export class BookController {
   findLight(@UserId() userId: string) {
     return this.bookService.findLight(userId);
   }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.bookService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
-    return this.bookService.update(id, updateBookDto);
+  @Patch('add-note/:id')
+  addNote(
+    @Param('id') id: string,
+    @Body() createNoteDto: CreateNoteDto,
+    @UserId() userId: string,
+  ) {
+    return this.bookService.addNote(id, createNoteDto, userId);
+  }
+
+  @Patch('add-highlight/:id')
+  addHighlight(
+    @Param('id') id: string,
+    @Body() createHighlightDto: CreateHighlightDto,
+    @UserId() userId: string,
+  ) {
+    return this.bookService.addHighlight(id, createHighlightDto, userId);
+  }
+
+  @Patch('bookmark/:id')
+  updateBookmark(
+    @Param('id') id: string,
+    @Body() createBookmarkDto: CreateBookmarkDto,
+  ) {
+    return this.bookService.updateBookmark(id, createBookmarkDto);
+  }
+
+  @Delete('note/:id')
+  removeNote(@Param('id') id: string) {
+    return this.bookService.removeNote(id);
+  }
+
+  @Delete('highlight/:id')
+  removeHighlight(@Param('id') id: string) {
+    return this.bookService.removeHighlight(id);
   }
 
   @Delete(':id')

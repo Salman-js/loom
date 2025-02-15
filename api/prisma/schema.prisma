@@ -10,23 +10,58 @@ datasource db {
 }
 
 model Book {
-  id          String    @id @default(uuid())
-  title       String
-  author      String
-  description String?   @db.VarChar(1000)
-  genre       String?
-  publisher   String?
-  publishDate DateTime?
-  userId      String    @map("user_id")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-  cover       String
-  path        String
-  shelves     Shelf[]   @relation("shelved_books")
+  id           String      @id @default(uuid())
+  title        String
+  author       String
+  description  String?     @db.VarChar(1000)
+  genre        String?
+  publisher    String?
+  publishDate  DateTime?
+  lastBookmark String?
+  userId       String      @map("user_id")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+  cover        String
+  path         String
+  highlights   Highlight[]
+  notes        Note[]
+  shelves      Shelf[]     @relation("shelved_books")
 
   @@index([title, author])
   @@index([genre])
   @@map("books")
+  @@schema("app")
+}
+
+model Highlight {
+  id        String   @id @default(uuid())
+  bookId    String   @map("book_id")
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  text      String
+  cfiRange  String
+  color     String
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([bookId, cfiRange])
+  @@map("highlights")
+  @@schema("app")
+}
+
+model Note {
+  id        String   @id @default(uuid())
+  bookId    String   @map("book_id")
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  text      String
+  cfiRange  String
+  note      String
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([bookId, cfiRange])
+  @@map("notes")
   @@schema("app")
 }
 

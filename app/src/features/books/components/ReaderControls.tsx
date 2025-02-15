@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Maximize2 } from 'lucide-react';
+import { Highlighter, Maximize2, Pencil } from 'lucide-react';
 import React from 'react';
 import SwitchPageMode from './SwitchPageMode';
 import { Tooltip } from '@/components/ui/factory/Tooltip';
@@ -16,13 +16,22 @@ const ReaderControls: React.FC<ReaderControlsProps> = ({
   toggle,
 }) => {
   return (
-    <div className='w-full flex flex-row justify-end space-x-1 px-10 py-0'>
-      <Tooltip content='Fullscreen'>
-        <Button size='icon' onClick={onFullScreen} variant='link'>
-          <Maximize2 />
+    <div className='w-full flex flex-row justify-between items-center px-10 py-4'>
+      <div className='flex flex-row space-x-2'>
+        <Button variant='outline'>
+          <Pencil /> Notes
         </Button>
-      </Tooltip>
-      <SwitchPageMode isSinglePage={isSinglePage} toggle={toggle} />
+        <Button variant='outline'>
+          <Highlighter />
+          Highlights
+        </Button>
+      </div>
+      <div className='flex flex-row space-x-2 items-center'>
+        <Tooltip content='Fullscreen'>
+          <Maximize2 onClick={onFullScreen} size={18} />
+        </Tooltip>
+        <SwitchPageMode isSinglePage={isSinglePage} toggle={toggle} />
+      </div>
     </div>
   );
 };

@@ -17,3 +17,29 @@ export class CreateBookDto {
   @IsDateString()
   publishDate?: string;
 }
+
+export class CreateBookmarkDto {
+  @IsString()
+  cfi: string;
+}
+export class CreateNoteDto {
+  @IsString()
+  note: string;
+
+  @IsString()
+  cfiRange: string;
+
+  @IsString()
+  text: string;
+}
+
+export class CreateHighlightDto {
+  @IsString()
+  color: string;
+
+  @IsString()
+  cfiRange: string;
+
+  @IsString()
+  text: string;
+}
