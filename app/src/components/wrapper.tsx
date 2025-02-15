@@ -11,6 +11,7 @@ import { useEffect, useMemo } from 'react';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import UnAuthorized from './ui/unauthorized';
 import { Loader2 } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -27,6 +28,7 @@ export default function Wrapper({
   const { theme } = useTheme();
   const { user, setUser, setToken } = useAuth();
   const { data: session, status } = useSession();
+  const pathname = usePathname();
   const sessionUser = useMemo(() => session?.user, [session]);
   useEffect(() => {
     if (sessionUser) {
@@ -34,11 +36,7 @@ export default function Wrapper({
     }
   }, [sessionUser]);
   useEffect(() => {
-    if (
-      !session &&
-      status === 'unauthenticated' &&
-      window?.location?.pathname !== '/sign-in'
-    ) {
+    if (!session && status === 'unauthenticated' && pathname !== '/sign-in') {
       window.location.href = '/sign-in';
     }
   }, [status, session]);
@@ -51,11 +49,7 @@ export default function Wrapper({
     );
   }
 
-  if (
-    !session &&
-    status === 'unauthenticated' &&
-    window?.location?.pathname !== '/sign-in'
-  ) {
+  if (!session && status === 'unauthenticated' && pathname !== '/sign-in') {
     return <UnAuthorized />;
   }
   return (

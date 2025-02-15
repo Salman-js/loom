@@ -25,7 +25,7 @@ export default function AddHighlightPopover({
       className='top-[2.7rem] flex flex-row space-x-1 p-1 bg-secondary'
     >
       {highlightColors.map((color) => (
-        <div className='p-1 cursor-pointer'>
+        <div className='p-1 cursor-pointer' key={color}>
           <div
             className={`p-3 rounded-md bg-[${color}]`}
             style={{

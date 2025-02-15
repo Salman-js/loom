@@ -79,7 +79,7 @@ const Books: React.FC<booksProps> = ({
             <motion.div
               layoutId={`book-card-${active.id}`}
               ref={ref}
-              className='p-10 rounded-3xl bg-background lg:w-[50vw] w-2/3 flex flex-col lg:flex-row justify-start items-start max-h-fit gap-10'
+              className='p-10 rounded-3xl bg-secondary lg:w-[50vw] w-2/3 flex flex-col lg:flex-row justify-start items-start max-h-fit gap-10'
               style={{
                 minHeight: state === 'expanded' ? '33em' : '30em',
                 maxHeight: 'fit-content',

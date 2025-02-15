@@ -21,6 +21,15 @@ export type ReaderStyleState = {
   fontFamily: React.CSSProperties['fontFamily'];
   fontSize: React.CSSProperties['fontSize'];
 };
+
+type ReaderLocationState = {
+  location: string | number;
+};
+
+type ReaderLocationAction = {
+  setLocation: (newLocation: string | number) => void;
+  resetLocation: () => 1;
+};
 type ReaderStyleAction = {
   setColorStyle: ({
     background,
@@ -57,6 +66,22 @@ export const tokenStore = createStore<TokenState & TokenAction>()(
       { name: 'user-token' }
     ),
     { name: 'user-token' }
+  )
+);
+export const readerLocationStore = createStore<
+  ReaderLocationState & ReaderLocationAction
+>()(
+  persist(
+    devtools(
+      (set) => ({
+        location: 1,
+        setLocation: (newLocation: string | number) =>
+          set({ location: newLocation }),
+        resetLocation: () => set({ location: undefined }),
+      }),
+      { name: 'reader-location' }
+    ),
+    { name: 'reader-location' }
   )
 );
 export const readerStyleStore = createStore<

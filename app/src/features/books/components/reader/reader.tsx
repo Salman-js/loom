@@ -7,13 +7,16 @@ import { useTheme } from 'next-themes';
 import { AnimatePresence, motion } from 'framer-motion';
 import AddNotePopover from '../AddNote';
 import { Button } from '@/components/ui/button';
-import { Copy, Fullscreen } from 'lucide-react';
+import { Copy, Fullscreen, Loader2 } from 'lucide-react';
 import AddHighlightPopover from '../AddHighilight';
 import { useReaderStyle } from '../../hooks/use-reader-style';
 import { ReaderStyleState } from '@/store/store';
 import CopyToClipBoard from '../CopyToClipBoard';
 import SwitchPageMode from '../SwitchPageMode';
 import ReaderControls from '../ReaderControls';
+import { useParams } from 'next/navigation';
+import { useFetchBookById } from '../../api/api.books';
+import { useReaderLocation } from '../../hooks/use-reader-location';
 
 type readerProps = {};
 
@@ -29,8 +32,12 @@ export type ITextSelection = {
   cfiRange: string;
 };
 const Reader: React.FC<readerProps> = () => {
+  const { id } = useParams<{
+    id: string;
+  }>();
+  const { data: book, isLoading, refetch, error } = useFetchBookById(id);
   const { background, text, fontFamily, fontSize } = useReaderStyle();
-  const [location, setLocation] = useState<string | number>(1);
+  const { location, setLocation } = useReaderLocation();
   const [chapterPage, setChapterPage] = useState(0);
   const [currentSelection, setSelection] = useState<ITextSelection | null>();
   const { theme } = useTheme();
@@ -46,7 +53,7 @@ const Reader: React.FC<readerProps> = () => {
   } | null>(null);
 
   const [rendition, setRendition] = useState<Rendition | undefined>(undefined);
-  const readerRef = useRef<HTMLDivElement>(null); // Reference to the container
+  const readerRef = useRef<HTMLDivElement>(null);
 
   const goFullscreen = () => {
     if (readerRef.current) {
@@ -57,11 +64,17 @@ const Reader: React.FC<readerProps> = () => {
   };
   const toggleMode = () => {
     if (rendition) {
+      const currentLocation = rendition.currentLocation();
+      const tempLocation = (currentLocation as any)?.start?.cfi;
+
       const newSpread = isSinglePage ? 'auto' : 'none';
       rendition.spread(newSpread);
+
       rendition.display();
+
+      setIsSinglePage(!isSinglePage);
+      setLocation(tempLocation);
     }
-    setIsSinglePage(!isSinglePage);
   };
   const handleHighlight = (color: string) => {
     if (rendition && currentSelection) {
@@ -183,43 +196,56 @@ const Reader: React.FC<readerProps> = () => {
         toggle={toggleMode}
         onFullScreen={goFullscreen}
       />
-      <ReactReader
-        url='https://react-reader.metabits.no/files/alice.epub'
-        location={location}
-        locationChanged={(epubcfi: string) => {
-          setLocation(epubcfi);
-          if (rendition && toc.current) {
-            const { displayed, href } = rendition?.location.start;
-            setChapterPage(displayed.page);
+      {book ? (
+        <ReactReader
+          url={book.path ?? ''}
+          location={location}
+          locationChanged={(epubcfi: string) => {
+            if (rendition && toc.current) {
+              const { displayed, href } = rendition?.location.start;
+              setChapterPage(displayed.page);
+            }
+          }}
+          readerStyles={{
+            ...getStyle(theme),
+          }}
+          getRendition={(rend: Rendition) => setRendition(rend)}
+          loadingView={
+            <div className='w-full h-full flex flex-col justify-center items-center'>
+              <Loader2 className='h-24 w-24 animate-spin' />
+            </div>
           }
-        }}
-        readerStyles={{
-          ...getStyle(theme),
-        }}
-        getRendition={(rend: Rendition) => setRendition(rend)}
-        loadingView={<div>Loading...</div>}
-        epubViewStyles={{
-          viewHolder: {
-            height: '100%',
-            width: '100%', // Ensure full width
-          },
-          view: {
-            height: '100%',
-            width: '100%', // Ensure full width
-          },
-        }}
-        epubOptions={{
-          allowScriptedContent: true,
-          allowPopups: true,
-        }}
-      />
+          epubViewStyles={{
+            viewHolder: {
+              height: '100%',
+              width: '100%', // Ensure full width
+            },
+            view: {
+              height: '100%',
+              width: '100%', // Ensure full width
+            },
+          }}
+          epubOptions={{
+            allowScriptedContent: true,
+            allowPopups: true,
+          }}
+        />
+      ) : isLoading ? (
+        <div className='w-full h-full flex flex-col justify-center items-center'>
+          <Loader2 className='h-24 w-24 animate-spin' />
+        </div>
+      ) : null}
       {buttonPosition && (
         <AnimatePresence>
           <motion.div
             style={{
               position: 'absolute',
-              left: buttonPosition.x + 70 - (chapterPage - 1) * 770,
-              top: buttonPosition.y + 120,
+              left:
+                buttonPosition.x +
+                70 -
+                (chapterPage - 1) * 770 -
+                chapterPage * 13,
+              top: buttonPosition.y + 170,
               zIndex: 49,
             }}
             initial={{

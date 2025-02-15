@@ -8,7 +8,12 @@ import {
 import * as path from 'path';
 import * as fs from 'fs/promises';
 import { UpdateBookDto } from './dto/update-book.dto';
-import { CreateBookDto } from './dto/create-book.dto';
+import {
+  CreateBookDto,
+  CreateBookmarkDto,
+  CreateHighlightDto,
+  CreateNoteDto,
+} from './dto/create-book.dto';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { QueryDto } from 'src/common/dtos/query.dto';
@@ -223,9 +228,157 @@ export class BookService {
       throw error;
     }
   }
-
-  update(id: string, updateBookDto: UpdateBookDto) {
-    return `This action updates a #${id} book`;
+  async updateBookmark(id: string, createBookmarkDto: CreateBookmarkDto) {
+    try {
+      const book = await this.txHost.tx.book.findFirst({
+        where: {
+          id,
+        },
+      });
+      if (!book) {
+        throw new NotFoundException('Book not found');
+      }
+      const updatedBook = await this.txHost.tx.book.update({
+        where: {
+          id,
+        },
+        data: {
+          lastBookmark: createBookmarkDto.cfi,
+        },
+      });
+      return {
+        data: updatedBook,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
+  async addNote(id: string, createNoteDto: CreateNoteDto, userId: string) {
+    try {
+      const book = await this.txHost.tx.book.findFirst({
+        where: {
+          id,
+        },
+      });
+      if (!book) {
+        throw new NotFoundException('Book not found');
+      }
+      await this.txHost.tx.book.update({
+        where: {
+          id,
+        },
+        data: {
+          notes: {
+            delete: {
+              bookId_cfiRange: {
+                bookId: id,
+                cfiRange: createNoteDto.cfiRange,
+              },
+            },
+            create: {
+              cfiRange: createNoteDto.cfiRange,
+              text: createNoteDto.text,
+              note: createNoteDto.note,
+              userId: userId,
+            },
+          },
+        },
+      });
+      return {
+        message: 'Note added successfully',
+        data: createNoteDto,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
+  async addHighlight(
+    id: string,
+    createHighlightDto: CreateHighlightDto,
+    userId: string,
+  ) {
+    try {
+      const book = await this.txHost.tx.book.findFirst({
+        where: {
+          id,
+        },
+      });
+      if (!book) {
+        throw new NotFoundException('Book not found');
+      }
+      await this.txHost.tx.book.update({
+        where: {
+          id,
+        },
+        data: {
+          highlights: {
+            delete: {
+              bookId_cfiRange: {
+                bookId: id,
+                cfiRange: createHighlightDto.cfiRange,
+              },
+            },
+            create: {
+              cfiRange: createHighlightDto.cfiRange,
+              text: createHighlightDto.text,
+              color: createHighlightDto.color,
+              userId: userId,
+            },
+          },
+        },
+      });
+      return {
+        message: 'Highlight added successfully',
+        data: createHighlightDto,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
+  async removeNote(id: string) {
+    try {
+      const note = await this.txHost.tx.note.findFirst({
+        where: {
+          id,
+        },
+      });
+      if (!note) {
+        throw new NotFoundException('Note not found');
+      }
+      await this.txHost.tx.note.delete({
+        where: { id },
+      });
+      return {
+        message: 'Note deleted successfully',
+      };
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
+  async removeHighlight(id: string) {
+    try {
+      const highlight = await this.txHost.tx.highlight.findFirst({
+        where: {
+          id,
+        },
+      });
+      if (!highlight) {
+        throw new NotFoundException('Highlight not found');
+      }
+      await this.txHost.tx.highlight.delete({
+        where: { id },
+      });
+      return {
+        message: 'Highlight deleted successfully',
+      };
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
   }
 
   async remove(id: string) {
