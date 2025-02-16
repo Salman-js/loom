@@ -17,7 +17,7 @@ const SwitchPageMode: React.FC<SwitchPageModeProps> = ({
       <Tooltip content={isSinglePage ? 'Double Page' : 'Single Page'}>
         <Button
           size='icon'
-          variant='link'
+          variant='outline'
           onClick={toggle}
           className='flex flex-col justify-center items-center'
         >

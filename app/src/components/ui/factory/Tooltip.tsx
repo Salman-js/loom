@@ -14,7 +14,7 @@ export const Tooltip: React.FC<tooltipProps> = ({ children, content }) => {
     <TooltipProvider>
       <ToolTip disableHoverableContent>
         <TooltipTrigger>{children}</TooltipTrigger>
-        <TooltipContent>{content}</TooltipContent>
+        <TooltipContent className='z-10'>{content}</TooltipContent>
       </ToolTip>
     </TooltipProvider>
   );

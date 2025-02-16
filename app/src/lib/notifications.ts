@@ -4,10 +4,8 @@ import { AxiosError } from 'axios';
 
 export const onErrorNotification = (error: AxiosError | any) => {
   return toast(error?.title ?? 'Error', {
-    description:
-      error?.description ||
-      error?.response?.data?.message ||
-      'An error occurred',
+    description: error?.description || error?.response?.data?.message,
+    closeButton: true,
   });
 };
 
@@ -19,6 +17,7 @@ export const onSuccessNotification = <T>(data: {
   };
 }) => {
   return toast(data?.message?.title ?? 'Success', {
-    description: data?.message?.description ?? 'action was successful',
+    description: data?.message?.description,
+    closeButton: true,
   });
 };

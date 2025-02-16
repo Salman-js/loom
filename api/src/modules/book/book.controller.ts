@@ -70,7 +70,7 @@ export class BookController {
     return this.bookService.findOne(id);
   }
 
-  @Patch('add-note/:id')
+  @Patch(':id/note')
   addNote(
     @Param('id') id: string,
     @Body() createNoteDto: CreateNoteDto,
@@ -79,7 +79,7 @@ export class BookController {
     return this.bookService.addNote(id, createNoteDto, userId);
   }
 
-  @Patch('add-highlight/:id')
+  @Patch(':id/highlight')
   addHighlight(
     @Param('id') id: string,
     @Body() createHighlightDto: CreateHighlightDto,
@@ -88,7 +88,7 @@ export class BookController {
     return this.bookService.addHighlight(id, createHighlightDto, userId);
   }
 
-  @Patch('bookmark/:id')
+  @Patch(':id/bookmark')
   updateBookmark(
     @Param('id') id: string,
     @Body() createBookmarkDto: CreateBookmarkDto,
@@ -96,14 +96,14 @@ export class BookController {
     return this.bookService.updateBookmark(id, createBookmarkDto);
   }
 
-  @Delete('note/:id')
-  removeNote(@Param('id') id: string) {
-    return this.bookService.removeNote(id);
+  @Delete(':id/note')
+  removeNote(@Body() body: { cfiRange: string }, @Param('id') id: string) {
+    return this.bookService.removeNote(body.cfiRange, id);
   }
 
-  @Delete('highlight/:id')
-  removeHighlight(@Param('id') id: string) {
-    return this.bookService.removeHighlight(id);
+  @Delete(':id/highlight')
+  removeHighlight(@Body() body: { cfiRange: string }, @Param('id') id: string) {
+    return this.bookService.removeHighlight(body.cfiRange, id);
   }
 
   @Delete(':id')
