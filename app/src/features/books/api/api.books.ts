@@ -89,6 +89,182 @@ export const useAddBook = ({
   });
 };
 
+export const useAddHighlight = (
+  id: string,
+  {
+    onSuccess: onCustomSuccess,
+    onError: onCustomError,
+  }: {
+    onSuccess?: (data: { message: string }) => void;
+    onError?: (error: AxiosError | any) => void;
+  }
+) => {
+  const queryClient = useQueryClient();
+  const onError = (error: AxiosError | any) => {
+    onErrorNotification(error);
+    onCustomError?.(error);
+  };
+  const onSuccess = (data: { message: string }) => {
+    queryClient.invalidateQueries({
+      queryKey: ['books', id],
+    });
+    onSuccessNotification({
+      message: {
+        title: '📖Highlight Added',
+        description: data.message,
+      },
+    });
+    onCustomSuccess?.(data);
+  };
+  return useMutate<{ message: string }>(
+    endpoints.BOOK + `/${id}/highlight`,
+    'patch',
+    {
+      onSuccess,
+      onError,
+    }
+  );
+};
+
+export const useAddNote = (
+  id: string,
+  {
+    onSuccess: onCustomSuccess,
+    onError: onCustomError,
+  }: {
+    onSuccess?: (data: { message: string }) => void;
+    onError?: (error: AxiosError | any) => void;
+  }
+) => {
+  const queryClient = useQueryClient();
+  const onError = (error: AxiosError | any) => {
+    onErrorNotification(error);
+    onCustomError?.(error);
+  };
+  const onSuccess = (data: { message: string }) => {
+    queryClient.invalidateQueries({
+      queryKey: ['books', id],
+    });
+    onSuccessNotification({
+      message: {
+        title: 'Note Added',
+        description: data.message,
+      },
+    });
+    onCustomSuccess?.(data);
+  };
+  return useMutate<{ message: string }>(
+    endpoints.BOOK + `/${id}/note`,
+    'patch',
+    {
+      onSuccess,
+      onError,
+    }
+  );
+};
+
+export const useDeleteHighlight = (
+  id: string,
+  {
+    onSuccess: onCustomSuccess,
+    onError: onCustomError,
+  }: {
+    onSuccess?: (data: { message: string }) => void;
+    onError?: (error: AxiosError | any) => void;
+  }
+) => {
+  const queryClient = useQueryClient();
+  const onError = (error: AxiosError | any) => {
+    onErrorNotification(error);
+    onCustomError?.(error);
+  };
+  const onSuccess = (data: { message: string }) => {
+    queryClient.invalidateQueries({
+      queryKey: ['books', id],
+    });
+    onSuccessNotification({
+      message: {
+        title: '📖Highlight Removed',
+        description: data.message,
+      },
+    });
+    onCustomSuccess?.(data);
+  };
+  return useMutate<{ message: string }>(
+    endpoints.BOOK + `/${id}/highlight`,
+    'delete',
+    {
+      onSuccess,
+      onError,
+    }
+  );
+};
+export const useDeleteNote = (
+  id: string,
+  {
+    onSuccess: onCustomSuccess,
+    onError: onCustomError,
+  }: {
+    onSuccess?: (data: { message: string }) => void;
+    onError?: (error: AxiosError | any) => void;
+  }
+) => {
+  const queryClient = useQueryClient();
+  const onError = (error: AxiosError | any) => {
+    onErrorNotification(error);
+    onCustomError?.(error);
+  };
+  const onSuccess = (data: { message: string }) => {
+    queryClient.invalidateQueries({
+      queryKey: ['books', id],
+    });
+    onSuccessNotification({
+      message: {
+        title: 'Note Removed',
+        description: data.message,
+      },
+    });
+    onCustomSuccess?.(data);
+  };
+  return useMutate<{ message: string }>(
+    endpoints.BOOK + `/${id}/note`,
+    'delete',
+    {
+      onSuccess,
+      onError,
+    }
+  );
+};
+export const useUpdateBookmark = (
+  id: string,
+  {
+    onSuccess: onCustomSuccess,
+    onError: onCustomError,
+  }: {
+    onSuccess?: (data: { message: string }) => void;
+    onError?: (error: AxiosError | any) => void;
+  }
+) => {
+  const queryClient = useQueryClient();
+  const onError = (error: AxiosError | any) => {
+    onErrorNotification(error);
+    onCustomError?.(error);
+  };
+  const onSuccess = (data: { message: string }) => {
+    queryClient.invalidateQueries({
+      queryKey: ['books', id],
+    });
+    onCustomSuccess?.(data);
+  };
+  return useMutate<{ message: string }>(
+    endpoints.BOOK + `/${id}/bookmark`,
+    'patch',
+    {
+      onSuccess,
+      onError,
+    }
+  );
+};
 export const useBookPagination = (queryParams?: Record<string, any>) => {
   return usePagination(
     endpoints.BOOK,

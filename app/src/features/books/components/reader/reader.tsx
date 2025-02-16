@@ -54,12 +54,25 @@ const Reader: React.FC<readerProps> = () => {
 
   const [rendition, setRendition] = useState<Rendition | undefined>(undefined);
   const readerRef = useRef<HTMLDivElement>(null);
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
   const goFullscreen = () => {
     if (readerRef.current) {
       if (readerRef.current.requestFullscreen) {
         readerRef.current.requestFullscreen();
       }
+    }
+  };
+  const exitFullscreen = () => {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  };
+  const toggleFullScreen = () => {
+    if (isFullScreen) {
+      exitFullscreen();
+    } else {
+      goFullscreen();
     }
   };
   const toggleMode = () => {
@@ -78,28 +91,12 @@ const Reader: React.FC<readerProps> = () => {
   };
   const handleHighlight = (color: string) => {
     if (rendition && currentSelection) {
-      rendition.annotations.add(
-        'highlight',
-        currentSelection.cfiRange,
-        {},
-        (e: MouseEvent) => {},
-        'hl',
-        {
-          fill: color,
-          'fill-opacity': '0.5',
-          'mix-blend-mode': 'multiply',
-        }
-      );
       setHighlights((prev) => [...prev, { ...currentSelection, color }]);
     }
   };
 
   const handleRemoveHighlight = () => {
     if (rendition && currentSelection) {
-      // Correctly remove the highlight annotation
-      rendition.annotations.remove(currentSelection.cfiRange, 'highlight');
-
-      // Update the highlights state
       setHighlights((prev) =>
         prev.filter((h) => h.cfiRange !== currentSelection.cfiRange)
       );
@@ -184,6 +181,18 @@ const Reader: React.FC<readerProps> = () => {
       };
     }
   }, [rendition, isMouseDown]);
+
+  useEffect(() => {
+    const handleFullScreenChange = () => {
+      setIsFullScreen(document.fullscreenElement !== null);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullScreenChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullScreenChange);
+    };
+  }, []);
   return (
     <div
       className={`${
@@ -194,7 +203,8 @@ const Reader: React.FC<readerProps> = () => {
       <ReaderControls
         isSinglePage={isSinglePage}
         toggle={toggleMode}
-        onFullScreen={goFullscreen}
+        toggleFullScreen={toggleFullScreen}
+        isFullScreen={isFullScreen}
       />
       {book ? (
         <ReactReader
@@ -259,17 +269,20 @@ const Reader: React.FC<readerProps> = () => {
           >
             <CopyToClipBoard currentSelection={currentSelection} />
             <AddHighlightPopover
-              onSelect={handleHighlight}
-              highlighted={highlights.some(
-                (h) => h.cfiRange === currentSelection?.cfiRange
-              )}
-              onUnHighlight={() => handleRemoveHighlight()}
+              onAfterHighlight={handleHighlight}
+              highlights={highlights}
+              onAfterUnhighlight={() => handleRemoveHighlight()}
+              currentSelection={currentSelection}
+              rendition={rendition}
+              bookId={book?.id ?? ''}
             />
             <AddNotePopover
-              onSave={handleAddNote}
-              onDelete={handleRemoveNote}
+              onAfterSave={handleAddNote}
+              onAfterDelete={handleRemoveNote}
               currentSelection={currentSelection}
               notes={notes}
+              rendition={rendition}
+              bookId={book?.id ?? ''}
             />
           </motion.div>
         </AnimatePresence>

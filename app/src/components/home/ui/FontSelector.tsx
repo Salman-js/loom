@@ -57,13 +57,21 @@ export default function FontSelector() {
         <p className='text-muted-foreground text-sm my-2'>Font Size</p>
         <div className='w-full flex flex-row justify-between items-center'>
           <div className='flex'>
-            <Button size='icon' onClick={handleDecreaseFontByOne}>
+            <Button
+              size='icon'
+              variant='outline'
+              onClick={handleDecreaseFontByOne}
+            >
               <Minus />
             </Button>
           </div>
           <div className='flex text-xl'>{selectedFont.size}</div>
           <div className='flex'>
-            <Button size='icon' onClick={handleIncreaseFontByOne}>
+            <Button
+              size='icon'
+              variant='outline'
+              onClick={handleIncreaseFontByOne}
+            >
               <Plus />
             </Button>
           </div>

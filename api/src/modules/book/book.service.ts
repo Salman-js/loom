@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import * as path from 'path';
 import * as fs from 'fs/promises';
-import { UpdateBookDto } from './dto/update-book.dto';
 import {
   CreateBookDto,
   CreateBookmarkDto,
@@ -214,6 +213,10 @@ export class BookService {
         where: {
           id,
         },
+        include: {
+          highlights: true,
+          notes: true,
+        },
       });
       if (!book) {
         throw new NotFoundException('Book not found');
@@ -270,23 +273,31 @@ export class BookService {
         },
         data: {
           notes: {
-            delete: {
-              bookId_cfiRange: {
-                bookId: id,
-                cfiRange: createNoteDto.cfiRange,
+            upsert: {
+              where: {
+                bookId_cfiRange: {
+                  bookId: id,
+                  cfiRange: createNoteDto.cfiRange,
+                },
               },
-            },
-            create: {
-              cfiRange: createNoteDto.cfiRange,
-              text: createNoteDto.text,
-              note: createNoteDto.note,
-              userId: userId,
+              create: {
+                cfiRange: createNoteDto.cfiRange,
+                text: createNoteDto.text,
+                note: createNoteDto.note,
+                userId: userId,
+              },
+              update: {
+                cfiRange: createNoteDto.cfiRange,
+                text: createNoteDto.text,
+                note: createNoteDto.note,
+                userId: userId,
+              },
             },
           },
         },
       });
       return {
-        message: 'Note added successfully',
+        message: createNoteDto?.note,
         data: createNoteDto,
       };
     } catch (error) {
@@ -314,23 +325,31 @@ export class BookService {
         },
         data: {
           highlights: {
-            delete: {
-              bookId_cfiRange: {
-                bookId: id,
-                cfiRange: createHighlightDto.cfiRange,
+            upsert: {
+              where: {
+                bookId_cfiRange: {
+                  bookId: id,
+                  cfiRange: createHighlightDto.cfiRange,
+                },
               },
-            },
-            create: {
-              cfiRange: createHighlightDto.cfiRange,
-              text: createHighlightDto.text,
-              color: createHighlightDto.color,
-              userId: userId,
+              create: {
+                cfiRange: createHighlightDto.cfiRange,
+                text: createHighlightDto.text,
+                color: createHighlightDto.color,
+                userId: userId,
+              },
+              update: {
+                cfiRange: createHighlightDto.cfiRange,
+                text: createHighlightDto.text,
+                color: createHighlightDto.color,
+                userId: userId,
+              },
             },
           },
         },
       });
       return {
-        message: 'Highlight added successfully',
+        message: `Highlighted ${createHighlightDto?.text}`,
         data: createHighlightDto,
       };
     } catch (error) {
@@ -338,42 +357,44 @@ export class BookService {
       throw error;
     }
   }
-  async removeNote(id: string) {
+  async removeNote(cfiRange: string, bookId: string) {
     try {
       const note = await this.txHost.tx.note.findFirst({
         where: {
-          id,
+          cfiRange,
+          bookId,
         },
       });
       if (!note) {
         throw new NotFoundException('Note not found');
       }
       await this.txHost.tx.note.delete({
-        where: { id },
+        where: { id: note?.id },
       });
       return {
-        message: 'Note deleted successfully',
+        message: null,
       };
     } catch (error) {
       this.logger.error(error);
       throw error;
     }
   }
-  async removeHighlight(id: string) {
+  async removeHighlight(cfiRange: string, bookId: string) {
     try {
       const highlight = await this.txHost.tx.highlight.findFirst({
         where: {
-          id,
+          cfiRange,
+          bookId,
         },
       });
       if (!highlight) {
         throw new NotFoundException('Highlight not found');
       }
       await this.txHost.tx.highlight.delete({
-        where: { id },
+        where: { id: highlight.id },
       });
       return {
-        message: 'Highlight deleted successfully',
+        message: null,
       };
     } catch (error) {
       this.logger.error(error);

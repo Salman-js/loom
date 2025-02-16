@@ -13,23 +13,32 @@ import { Button } from '../../../components/ui/button';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ITextSelection } from './reader/reader';
 import { Tooltip } from '@/components/ui/factory/Tooltip';
+import { Rendition } from 'epubjs';
+import { useAddNote, useDeleteNote } from '../api/api.books';
 
 type addNoteProps = {
-  onSave: (text: string) => void;
-  onDelete: () => void;
+  onAfterSave: (text: string) => void;
+  onAfterDelete: () => void;
   currentSelection?: ITextSelection | null;
   notes: (ITextSelection & { note: string })[];
+  rendition: Rendition | undefined;
+  bookId: string;
 };
 export default function AddNotePopover({
-  onSave,
-  onDelete,
+  onAfterSave,
+  onAfterDelete,
   currentSelection,
   notes,
+  rendition,
+  bookId,
 }: addNoteProps) {
   const hasExistingNote = notes.some(
     (note) => note.cfiRange === currentSelection?.cfiRange
   );
   const [noteText, setNoteText] = useState('');
+  const { isPending, mutateAsync } = useAddNote(bookId, {});
+  const { isPending: isDeletePending, mutateAsync: deleteAsync } =
+    useDeleteNote(bookId, {});
   const setDefaultNote = () => {
     const defaultNote = notes.find(
       (note) => note.cfiRange === currentSelection?.cfiRange
@@ -38,7 +47,26 @@ export default function AddNotePopover({
   };
   const handleDelete = () => {
     setNoteText('');
-    onDelete();
+    deleteAsync({
+      bookId,
+      cfiRange: currentSelection?.cfiRange,
+    });
+    onAfterDelete?.();
+  };
+  const handleAddNote = (text: string) => {
+    if (rendition && currentSelection) {
+      handleRemoveNote();
+      mutateAsync({
+        ...currentSelection,
+        note: noteText,
+      });
+      onAfterSave?.(text);
+    }
+  };
+  const handleRemoveNote = () => {
+    if (rendition && currentSelection) {
+      onAfterDelete?.();
+    }
   };
   useEffect(() => {
     if (currentSelection) setDefaultNote();
@@ -54,7 +82,7 @@ export default function AddNotePopover({
       className='top-[2.7rem] h-[200px] w-[364px]'
     >
       <PopoverCloseButton className='absolute top-2 right-2' />
-      <PopoverForm onSubmit={(note) => onSave(note)}>
+      <PopoverForm onSubmit={(note) => handleAddNote(note)}>
         <PopoverLabel>Add Note</PopoverLabel>
         <PopoverTextarea
           value={noteText}
