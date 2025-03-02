@@ -65,6 +65,11 @@ export class BookController {
     return this.bookService.findLight(userId);
   }
 
+  @Get('details/:id')
+  getBookDetails(@Param('id') id: string) {
+    return this.bookService.getBookDetails(id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.bookService.findOne(id);

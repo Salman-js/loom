@@ -15,6 +15,7 @@ export default function AddHighlightPopover({
   rendition,
   currentSelection,
   highlights,
+  disabled,
 }: {
   onAfterHighlight: (color: string) => void;
   onAfterUnhighlight: () => void;
@@ -22,6 +23,7 @@ export default function AddHighlightPopover({
   rendition: Rendition | undefined;
   currentSelection: ITextSelection | null | undefined;
   highlights: (ITextSelection & { color: string })[];
+  disabled: boolean;
 }) {
   const highlighted = highlights.some(
     (h) => h.cfiRange === currentSelection?.cfiRange
@@ -68,25 +70,28 @@ export default function AddHighlightPopover({
           <Highlighter />
         </Tooltip>
       }
+      disabled={disabled}
       withCloseButton={false}
-      className='top-[2.7rem] flex flex-row space-x-1 p-1 bg-secondary'
+      className='z-50 bg-secondary'
     >
-      {highlightColors.map((color) => (
-        <div className='p-1 cursor-pointer' key={color}>
-          <div
-            className={`p-3 rounded-md bg-[${color}]`}
-            style={{
-              backgroundColor: color,
-            }}
-            onClick={() => handleHighlight(color)}
-          ></div>
-        </div>
-      ))}
-      {highlighted && (
-        <div className='p-1 cursor-pointer'>
-          <X onClick={handleRemoveHighlight} />
-        </div>
-      )}
+      <div className='w-full flex flex-row'>
+        {highlightColors.map((color) => (
+          <div className='p-1 cursor-pointer' key={color}>
+            <div
+              className={`p-3 rounded-md bg-[${color}]`}
+              style={{
+                backgroundColor: color,
+              }}
+              onClick={() => handleHighlight(color)}
+            ></div>
+          </div>
+        ))}
+        {highlighted && (
+          <div className='p-1 cursor-pointer'>
+            <X onClick={handleRemoveHighlight} />
+          </div>
+        )}
+      </div>
     </Popover>
   );
 }

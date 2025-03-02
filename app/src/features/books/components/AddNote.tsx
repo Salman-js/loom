@@ -7,7 +7,7 @@ import {
   PopoverFooter,
   PopoverCloseButton,
 } from '@/components/ui/popover';
-import { Pencil, Save, Trash } from 'lucide-react';
+import { Loader2, Pencil, Save, Trash } from 'lucide-react';
 import Popover from '../../../components/ui/factory/Popover';
 import { Button } from '../../../components/ui/button';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -23,6 +23,7 @@ type addNoteProps = {
   notes: (ITextSelection & { note: string })[];
   rendition: Rendition | undefined;
   bookId: string;
+  disabled?: boolean;
 };
 export default function AddNotePopover({
   onAfterSave,
@@ -31,6 +32,7 @@ export default function AddNotePopover({
   notes,
   rendition,
   bookId,
+  disabled = false,
 }: addNoteProps) {
   const hasExistingNote = notes.some(
     (note) => note.cfiRange === currentSelection?.cfiRange
@@ -53,7 +55,7 @@ export default function AddNotePopover({
     });
     onAfterDelete?.();
   };
-  const handleAddNote = (text: string) => {
+  const handleAddNote = async (text: string) => {
     if (rendition && currentSelection) {
       handleRemoveNote();
       mutateAsync({
@@ -79,6 +81,7 @@ export default function AddNotePopover({
         </Tooltip>
       }
       withCloseButton={false}
+      disabled={disabled}
       className='top-[2.7rem] h-[200px] w-[364px]'
     >
       <PopoverCloseButton className='absolute top-2 right-2' />
@@ -98,12 +101,16 @@ export default function AddNotePopover({
                 title='Delete'
                 onClick={handleDelete}
               >
-                <Trash />
+                {isDeletePending ? (
+                  <Loader2 className='animate-spin' />
+                ) : (
+                  <Trash />
+                )}
               </Button>
             )}
           </div>
           <Button type='submit' size='icon' variant='secondary' title='Save'>
-            <Save />
+            {isPending ? <Loader2 className='animate-spin' /> : <Save />}
           </Button>
         </PopoverFooter>
       </PopoverForm>

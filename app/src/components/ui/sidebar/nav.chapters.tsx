@@ -6,30 +6,56 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { useChapters } from '@/features/books/hooks/use-chapters';
+import { useReaderLocation } from '@/features/books/hooks/use-reader-location';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '../collapsible';
+import { ChevronRight } from 'lucide-react';
 
-export function NavChapters({
-  chapters,
-}: {
-  chapters: {
-    name: string;
-  }[];
-}) {
-  const { isMobile } = useSidebar();
-
+export function NavChapters() {
+  const { open, state, toggleSidebar, isMobile } = useSidebar();
+  const { url, setActiveChapter } = useReaderLocation();
+  const toc = useChapters(url);
+  const handleChapterClick = (href: string) => {
+    setActiveChapter(href);
+  };
   return (
-    <SidebarGroup className='group-data-[collapsible=icon]:hidden'>
-      <SidebarGroupLabel>Chapters</SidebarGroupLabel>
-      <SidebarMenu>
-        {chapters.map((item) => (
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild className='py-2 cursor-pointer'>
-              <span className='w-full truncate'>{item.name}</span>
+    <SidebarGroup>
+      <Collapsible asChild className='group/collapsible'>
+        <SidebarMenu>
+          <CollapsibleTrigger asChild>
+            <SidebarMenuButton
+              onClick={() => {
+                if (state === 'collapsed' && !isMobile) toggleSidebar();
+              }}
+            >
+              <SidebarGroupLabel>Chapters</SidebarGroupLabel>
+              <ChevronRight className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
             </SidebarMenuButton>
-          </SidebarMenuItem>
-        ))}
-      </SidebarMenu>
+          </CollapsibleTrigger>
+          <CollapsibleContent className='max-h-[30em] overflow-y-auto'>
+            <SidebarMenuSub>
+              {toc.map((item) => (
+                <SidebarMenuItem key={item.label}>
+                  <SidebarMenuButton
+                    asChild
+                    className='py-2 cursor-pointer'
+                    onClick={() => handleChapterClick(item.href)}
+                  >
+                    <span className='w-full truncate'>{item.label}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenuSub>
+          </CollapsibleContent>
+        </SidebarMenu>
+      </Collapsible>
     </SidebarGroup>
   );
 }

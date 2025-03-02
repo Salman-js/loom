@@ -24,11 +24,15 @@ export type ReaderStyleState = {
 
 type ReaderLocationState = {
   location: string | number;
+  url: string | undefined;
+  activeChapter: string | undefined;
 };
 
 type ReaderLocationAction = {
   setLocation: (newLocation: string | number) => void;
   resetLocation: () => 1;
+  setUrl: (newUrl?: string) => void;
+  setActiveChapter: (newChapter?: string) => void;
 };
 type ReaderStyleAction = {
   setColorStyle: ({
@@ -75,6 +79,11 @@ export const readerLocationStore = createStore<
     devtools(
       (set) => ({
         location: 1,
+        url: undefined,
+        activeChapter: undefined,
+        setActiveChapter: (newChapter?: string) =>
+          set({ activeChapter: newChapter }),
+        setUrl: (newUrl?: string) => set({ url: newUrl }),
         setLocation: (newLocation: string | number) =>
           set({ location: newLocation }),
         resetLocation: () => set({ location: undefined }),

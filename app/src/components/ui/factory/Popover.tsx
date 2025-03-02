@@ -24,6 +24,8 @@ type PopoverProps = {
   trigger: React.ReactNode;
   withCloseButton?: boolean;
   className?: string;
+  disabled?: boolean;
+  size?: 'default' | 'sm' | 'lg' | 'icon';
 };
 
 const Popover: React.FC<PopoverProps> = ({
@@ -34,10 +36,12 @@ const Popover: React.FC<PopoverProps> = ({
   trigger,
   withCloseButton = true,
   className,
+  disabled = false,
+  size,
 }) => {
   return (
     <PopoverRoot>
-      <PopoverTrigger variant='link' size='icon'>
+      <PopoverTrigger variant='ghost' size={size} disabled={disabled}>
         {trigger}
       </PopoverTrigger>
       <PopoverContent className={cn('', className)}>
@@ -45,13 +49,14 @@ const Popover: React.FC<PopoverProps> = ({
           header ||
           (withCloseButton && (
             <PopoverHeader
-              className={
+              className={cn(
+                '',
                 header
                   ? undefined
                   : `flex flex-row justify-${
                       title ? 'between' : 'end'
                     } items-center`
-              }
+              )}
             >
               {header ? header : title}
               {withCloseButton && <PopoverCloseButton />}

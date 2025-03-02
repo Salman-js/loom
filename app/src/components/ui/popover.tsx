@@ -62,7 +62,7 @@ const PopoverRoot = React.forwardRef<HTMLDivElement, PopoverRootProps>(
           <div
             ref={ref}
             className={cn(
-              'relative flex items-center justify-center isolate z-50',
+              'relative flex items-center justify-center',
               className
             )}
           >
@@ -78,7 +78,6 @@ PopoverRoot.displayName = 'PopoverRoot';
 interface PopoverTriggerProps {
   children: React.ReactNode;
   className?: string;
-  size?: 'default' | 'sm' | 'lg' | 'icon' | null | undefined;
   variant?:
     | 'default'
     | 'destructive'
@@ -86,33 +85,34 @@ interface PopoverTriggerProps {
     | 'secondary'
     | 'ghost'
     | 'link';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  disabled?: boolean;
 }
 
 const PopoverTrigger = React.forwardRef<HTMLButtonElement, PopoverTriggerProps>(
-  ({ children, className, variant = 'outline', size = 'default' }, ref) => {
-    const { openPopover, uniqueId, isOpen, closePopover } = usePopover();
+  (
+    {
+      children,
+      className,
+      variant = 'outline',
+      size = 'default',
+      disabled = false,
+    },
+    ref
+  ) => {
+    const { openPopover, uniqueId } = usePopover();
 
     return (
-      <motion.div
-        key='button'
-        // layoutId={`popover-${uniqueId}`}
-      >
+      <motion.div key='button' layoutId={`popover-${uniqueId}`}>
         <Button
           ref={ref}
           variant={variant}
           className={className}
-          onClick={(e) => {
-            e.preventDefault();
-            openPopover();
-          }}
+          onClick={openPopover}
           size={size}
+          disabled={disabled}
         >
-          <motion.span
-            // layoutId={`popover-label-${uniqueId}`}
-            className='text-sm flex flex-row items-center justify-center'
-          >
-            {children}
-          </motion.span>
+          {children}
         </Button>
       </motion.div>
     );
@@ -157,7 +157,7 @@ const PopoverContent = React.forwardRef<HTMLDivElement, PopoverContentProps>(
         {isOpen && (
           <motion.div
             ref={contentRef}
-            // layoutId={`popover-${uniqueId}`}
+            layoutId={`popover-${uniqueId}`}
             className={cn(
               'absolute z-50 min-w-[200px] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md outline-none',
               className
@@ -188,7 +188,6 @@ const PopoverForm = React.forwardRef<HTMLFormElement, PopoverFormProps>(
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
       onSubmit?.(note);
-      closePopover();
     };
 
     return (
@@ -216,7 +215,7 @@ const PopoverLabel = React.forwardRef<HTMLSpanElement, PopoverLabelProps>(
     return (
       <motion.span
         ref={ref}
-        // layoutId={`popover-label-${uniqueId}`}
+        layoutId={`popover-label-${uniqueId}`}
         aria-hidden='true'
         style={{
           opacity: note ? 0 : 1,
@@ -236,8 +235,8 @@ PopoverLabel.displayName = 'PopoverLabel';
 interface PopoverTextareaProps {
   className?: string;
   id?: string;
-  value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
 const PopoverTextarea = React.forwardRef<
@@ -245,9 +244,7 @@ const PopoverTextarea = React.forwardRef<
   PopoverTextareaProps
 >(({ className, id, onChange, value }, ref) => {
   const { note, setNote } = usePopover();
-  React.useEffect(() => {
-    if (value) setNote(value);
-  }, [value]);
+
   return (
     <textarea
       ref={ref}
@@ -258,7 +255,10 @@ const PopoverTextarea = React.forwardRef<
       )}
       autoFocus
       value={value}
-      onChange={onChange}
+      onChange={(e) => {
+        setNote(e.target.value);
+        onChange(e);
+      }}
     />
   );
 });
@@ -316,7 +316,6 @@ PopoverCloseButton.displayName = 'PopoverCloseButton';
 interface PopoverSubmitButtonProps {
   children?: React.ReactNode;
   className?: string;
-  size?: 'default' | 'sm' | 'lg' | 'icon' | null | undefined;
   variant?:
     | 'default'
     | 'destructive'
@@ -329,25 +328,20 @@ interface PopoverSubmitButtonProps {
 const PopoverSubmitButton = React.forwardRef<
   HTMLButtonElement,
   PopoverSubmitButtonProps
->(
-  (
-    { children = 'Submit', className, variant = 'default', size = 'sm' },
-    ref
-  ) => {
-    return (
-      <Button
-        ref={ref}
-        type='submit'
-        variant={variant}
-        size={size}
-        className={className}
-        aria-label='Submit note'
-      >
-        {children}
-      </Button>
-    );
-  }
-);
+>(({ children = 'Submit', className, variant = 'default' }, ref) => {
+  return (
+    <Button
+      ref={ref}
+      type='submit'
+      variant={variant}
+      size='sm'
+      className={className}
+      aria-label='Submit note'
+    >
+      {children}
+    </Button>
+  );
+});
 PopoverSubmitButton.displayName = 'PopoverSubmitButton';
 
 interface PopoverHeaderProps {
@@ -392,11 +386,10 @@ interface PopoverButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
   className?: string;
-  disabled?: boolean;
 }
 
 const PopoverButton = React.forwardRef<HTMLButtonElement, PopoverButtonProps>(
-  ({ children, onClick, className, disabled = false }, ref) => {
+  ({ children, onClick, className }, ref) => {
     return (
       <Button
         ref={ref}

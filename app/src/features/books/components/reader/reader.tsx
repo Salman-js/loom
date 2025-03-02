@@ -17,6 +17,7 @@ import ReaderControls from '../ReaderControls';
 import { useParams } from 'next/navigation';
 import { useFetchBookById } from '../../api/api.books';
 import { useReaderLocation } from '../../hooks/use-reader-location';
+import { cn } from '@/lib/utils';
 
 type readerProps = {};
 
@@ -37,7 +38,7 @@ const Reader: React.FC<readerProps> = () => {
   }>();
   const { data: book, isLoading, refetch, error } = useFetchBookById(id);
   const { background, text, fontFamily, fontSize } = useReaderStyle();
-  const { location, setLocation } = useReaderLocation();
+  const { location, setLocation, setUrl, activeChapter } = useReaderLocation();
   const [chapterPage, setChapterPage] = useState(0);
   const [currentSelection, setSelection] = useState<ITextSelection | null>();
   const { theme } = useTheme();
@@ -47,10 +48,6 @@ const Reader: React.FC<readerProps> = () => {
   const [isSinglePage, setIsSinglePage] = useState(false);
   const [notes, setNotes] = useState<(ITextSelection & { note: string })[]>([]);
   const toc = useRef<NavItem[]>([]);
-  const [buttonPosition, setButtonPosition] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
 
   const [rendition, setRendition] = useState<Rendition | undefined>(undefined);
   const readerRef = useRef<HTMLDivElement>(null);
@@ -59,7 +56,9 @@ const Reader: React.FC<readerProps> = () => {
   const goFullscreen = () => {
     if (readerRef.current) {
       if (readerRef.current.requestFullscreen) {
-        readerRef.current.requestFullscreen();
+        readerRef.current.requestFullscreen({
+          navigationUI: 'show',
+        });
       }
     }
   };
@@ -131,15 +130,6 @@ const Reader: React.FC<readerProps> = () => {
         if (rendition) {
           setTimeout(() => {
             const selectedText = rendition.getRange(cfiRange).toString();
-            const selection = contents.window.getSelection();
-            if (selection?.rangeCount) {
-              const range = selection.getRangeAt(0);
-              const rect = range.getBoundingClientRect();
-              setButtonPosition({
-                x: rect.left + contents.window.scrollX,
-                y: rect.bottom + contents.window.scrollY,
-              });
-            }
             setSelection({
               text: selectedText,
               cfiRange,
@@ -154,33 +144,17 @@ const Reader: React.FC<readerProps> = () => {
       };
     }
   }, [rendition]);
-  const [isMouseDown, setIsMouseDown] = useState(false);
 
   useEffect(() => {
     if (rendition) {
-      const handleMouseDown = () => setIsMouseDown(true);
-      const handleMouseUp = () => setIsMouseDown(false);
+      const handleClick = () => setSelection(null);
 
-      const handleClick = () => {
-        if (!isMouseDown) {
-          setButtonPosition(null);
-        }
-      };
-
-      // Attach mousedown and mouseup listeners to track mouse state
-      rendition.on('mousedown', handleMouseDown);
-      rendition.on('mouseup', handleMouseUp);
-
-      // Attach the click event listener
       rendition.on('click', handleClick);
-      // Cleanup all listeners when the component unmounts or rendition changes
       return () => {
-        rendition.off('mousedown', handleMouseDown);
-        rendition.off('mouseup', handleMouseUp);
         rendition.off('click', handleClick);
       };
     }
-  }, [rendition, isMouseDown]);
+  }, [rendition]);
 
   useEffect(() => {
     const handleFullScreenChange = () => {
@@ -193,11 +167,24 @@ const Reader: React.FC<readerProps> = () => {
       document.removeEventListener('fullscreenchange', handleFullScreenChange);
     };
   }, []);
+  const cfiRangeChange = (cfiRange: string) => {
+    if (rendition) rendition.display(cfiRange);
+  };
+  useEffect(() => {
+    if (book) setUrl(book.path);
+  }, [book]);
+  useEffect(() => {
+    if (activeChapter) {
+      if (rendition) {
+        rendition.display(activeChapter);
+      }
+    }
+  }, [activeChapter]);
   return (
     <div
       className={`${
         isSinglePage ? 'w-full lg:w-1/2' : 'w-full'
-      } flex flex-col h-[90vh] mx-auto`}
+      } flex flex-col h-[90vh] mx-auto z-10`}
       ref={readerRef}
     >
       <ReaderControls
@@ -205,6 +192,52 @@ const Reader: React.FC<readerProps> = () => {
         toggle={toggleMode}
         toggleFullScreen={toggleFullScreen}
         isFullScreen={isFullScreen}
+        bookId={book?.id}
+        onCfiClick={cfiRangeChange}
+        rendition={rendition}
+        selectionControls={
+          <AnimatePresence>
+            <motion.div
+              initial={{
+                width: 0,
+              }}
+              animate={{
+                width: 'auto',
+              }}
+              exit={{
+                width: 0,
+              }}
+              transition={{ duration: 0.15 }}
+              className={cn(
+                'flex flex-row justify-center items-center space-x-1 border rounded-md shadow-sm',
+                isFullScreen && 'bg-background'
+              )}
+            >
+              <CopyToClipBoard
+                currentSelection={currentSelection}
+                disabled={!currentSelection}
+              />
+              <AddHighlightPopover
+                onAfterHighlight={handleHighlight}
+                highlights={highlights}
+                onAfterUnhighlight={() => handleRemoveHighlight()}
+                currentSelection={currentSelection}
+                rendition={rendition}
+                bookId={book?.id ?? ''}
+                disabled={!currentSelection}
+              />
+              <AddNotePopover
+                onAfterSave={handleAddNote}
+                onAfterDelete={handleRemoveNote}
+                currentSelection={currentSelection}
+                notes={notes}
+                rendition={rendition}
+                bookId={book?.id ?? ''}
+                disabled={!currentSelection}
+              />
+            </motion.div>
+          </AnimatePresence>
+        }
       />
       {book ? (
         <ReactReader
@@ -229,10 +262,12 @@ const Reader: React.FC<readerProps> = () => {
             viewHolder: {
               height: '100%',
               width: '100%', // Ensure full width
+              zIndex: 5,
             },
             view: {
               height: '100%',
               width: '100%', // Ensure full width
+              zIndex: 5,
             },
           }}
           epubOptions={{
@@ -245,48 +280,6 @@ const Reader: React.FC<readerProps> = () => {
           <Loader2 className='h-24 w-24 animate-spin' />
         </div>
       ) : null}
-      {buttonPosition && (
-        <AnimatePresence>
-          <motion.div
-            style={{
-              position: 'absolute',
-              left:
-                buttonPosition.x +
-                70 -
-                (chapterPage - 1) * 770 -
-                chapterPage * 13,
-              top: buttonPosition.y + 170,
-              zIndex: 49,
-            }}
-            initial={{
-              height: 0,
-            }}
-            animate={{
-              height: 'auto',
-            }}
-            transition={{ duration: 0.15 }}
-            className='flex flex-row justify-center items-center space-x-1 p-1 rounded-xl bg-secondary shadow-md border'
-          >
-            <CopyToClipBoard currentSelection={currentSelection} />
-            <AddHighlightPopover
-              onAfterHighlight={handleHighlight}
-              highlights={highlights}
-              onAfterUnhighlight={() => handleRemoveHighlight()}
-              currentSelection={currentSelection}
-              rendition={rendition}
-              bookId={book?.id ?? ''}
-            />
-            <AddNotePopover
-              onAfterSave={handleAddNote}
-              onAfterDelete={handleRemoveNote}
-              currentSelection={currentSelection}
-              notes={notes}
-              rendition={rendition}
-              bookId={book?.id ?? ''}
-            />
-          </motion.div>
-        </AnimatePresence>
-      )}
     </div>
   );
 };
@@ -320,18 +313,22 @@ const getStyle = (theme?: string): IReactReaderStyle => {
     tocArea: {
       ...ReactReaderStyle.tocArea,
       background: '#111',
+      display: 'none',
     },
     tocButtonExpanded: {
       ...ReactReaderStyle.tocButtonExpanded,
       background: '#222',
+      display: 'none',
     },
     tocButtonBar: {
       ...ReactReaderStyle.tocButtonBar,
       background: '#fff',
+      display: 'none',
     },
     tocButton: {
       ...ReactReaderStyle.tocButton,
       color: 'white',
+      display: 'none',
     },
   };
   const readerTheme: IReactReaderStyle = {
