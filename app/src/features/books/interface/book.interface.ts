@@ -12,4 +12,22 @@ export interface IBook {
   publisher?: string;
   path?: string;
   shelves: IShelf[];
+  highlights: IHighlight[];
+  notes: INote[];
+}
+
+export interface IHighlight {
+  id: string;
+  text: string;
+  cfiRange: string;
+  color: string;
+  bookId: string;
+}
+
+export interface INote {
+  id: string;
+  text: string;
+  cfiRange: string;
+  note: string;
+  bookId: string;
 }

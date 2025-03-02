@@ -147,7 +147,7 @@ export function BookSidebar({
       <SidebarSeparator />
       <SidebarContent>
         <NavMain />
-        <NavChapters chapters={data.chapters} />
+        <NavChapters />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

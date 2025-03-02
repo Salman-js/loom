@@ -231,6 +231,26 @@ export class BookService {
       throw error;
     }
   }
+  async getBookDetails(id: string) {
+    try {
+      const book = await this.txHost.tx.book.findFirst({
+        where: {
+          id,
+        },
+        include: {
+          highlights: true,
+          notes: true,
+        },
+      });
+      if (!book) {
+        throw new NotFoundException('Book not found');
+      }
+      return book;
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
   async updateBookmark(id: string, createBookmarkDto: CreateBookmarkDto) {
     try {
       const book = await this.txHost.tx.book.findFirst({

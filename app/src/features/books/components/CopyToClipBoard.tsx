@@ -8,10 +8,12 @@ import { Tooltip } from '@/components/ui/factory/Tooltip';
 
 type CopyToClipBoardProps = {
   currentSelection?: ITextSelection | null;
+  disabled?: boolean;
 };
 
 const CopyToClipBoard: React.FC<CopyToClipBoardProps> = ({
   currentSelection,
+  disabled = false,
 }) => {
   const text = currentSelection?.text;
   const [copied, setCopied] = useState(false);
@@ -33,9 +35,10 @@ const CopyToClipBoard: React.FC<CopyToClipBoardProps> = ({
     <Tooltip content='Copy'>
       <Button
         size='icon'
-        variant='link'
+        variant='ghost'
         onClick={onCopy}
         className='flex flex-col justify-center items-center'
+        disabled={disabled}
       >
         <Copy
           className={`${

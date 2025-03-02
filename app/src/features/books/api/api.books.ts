@@ -41,6 +41,17 @@ export const useFetchBookById = (id?: string) => {
     }
   );
 };
+export const useFetchBookWithDetails = (id?: string) => {
+  return useFetchQuery<IBook>(
+    endpoints.BOOK + `/details/${id}`,
+    ['books', 'details', id],
+    {},
+    {
+      enabled: !!id,
+      queryKey: ['books', 'details', id],
+    }
+  );
+};
 export const useAddBook = ({
   onSuccess: onCustomSuccess,
   onError: onCustomError,
@@ -108,6 +119,9 @@ export const useAddHighlight = (
     queryClient.invalidateQueries({
       queryKey: ['books', id],
     });
+    queryClient.invalidateQueries({
+      queryKey: ['books', 'details', id],
+    });
     onSuccessNotification({
       message: {
         title: '📖Highlight Added',
@@ -144,6 +158,9 @@ export const useAddNote = (
   const onSuccess = (data: { message: string }) => {
     queryClient.invalidateQueries({
       queryKey: ['books', id],
+    });
+    queryClient.invalidateQueries({
+      queryKey: ['books', 'details', id],
     });
     onSuccessNotification({
       message: {
@@ -182,6 +199,9 @@ export const useDeleteHighlight = (
     queryClient.invalidateQueries({
       queryKey: ['books', id],
     });
+    queryClient.invalidateQueries({
+      queryKey: ['books', 'details', id],
+    });
     onSuccessNotification({
       message: {
         title: '📖Highlight Removed',
@@ -217,6 +237,9 @@ export const useDeleteNote = (
   const onSuccess = (data: { message: string }) => {
     queryClient.invalidateQueries({
       queryKey: ['books', id],
+    });
+    queryClient.invalidateQueries({
+      queryKey: ['books', 'details', id],
     });
     onSuccessNotification({
       message: {
