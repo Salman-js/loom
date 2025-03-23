@@ -84,6 +84,7 @@ const ReaderControls: React.FC<ReaderControlsProps> = ({
                   <div
                     className='p-3 rounded-lg border w-full flex flex-row justify-between items-center cursor-pointer'
                     onClick={() => onCfiClick(h.cfiRange)}
+                    key={h.id}
                   >
                     <div>{h.text}</div>
                   </div>
@@ -104,6 +105,7 @@ const ReaderControls: React.FC<ReaderControlsProps> = ({
                   <div
                     className='p-3 rounded-lg border w-full flex flex-row justify-between  cursor-pointer'
                     onClick={() => onCfiClick(h.cfiRange)}
+                    key={h.id}
                   >
                     <div>{h.text}</div>
                     <div
@@ -121,11 +123,9 @@ const ReaderControls: React.FC<ReaderControlsProps> = ({
         {selectionControls}
       </div>
       <div className='flex flex-row justify-end space-x-2 items-center w-1/3'>
-        <Tooltip content='Fullscreen'>
-          <Button variant='outline' size='icon' onClick={toggleFullScreen}>
-            {isFullScreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
-          </Button>
-        </Tooltip>
+        <Button variant='outline' size='icon' onClick={toggleFullScreen}>
+          {isFullScreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+        </Button>
         {/* <SwitchPageMode isSinglePage={isSinglePage} toggle={toggle} /> */}
       </div>
     </div>

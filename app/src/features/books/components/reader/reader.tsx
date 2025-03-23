@@ -234,6 +234,7 @@ const Reader: React.FC<readerProps> = () => {
                 rendition={rendition}
                 bookId={book?.id ?? ''}
                 disabled={!currentSelection}
+                isFullScreen={isFullScreen}
               />
             </motion.div>
           </AnimatePresence>
@@ -252,7 +253,35 @@ const Reader: React.FC<readerProps> = () => {
           readerStyles={{
             ...getStyle(theme),
           }}
-          getRendition={(rend: Rendition) => setRendition(rend)}
+          getRendition={(_rendition: Rendition) => {
+            setRendition(_rendition);
+            if (rendition) {
+              (rendition as any).current = _rendition;
+              _rendition.hooks.content.register((contents: Contents) => {
+                const document = contents.window.document;
+                if (document) {
+                  const css = `
+                  @font-face {
+                    font-family: "Times New Roman";
+                    font-weight: 400;
+                    font-style: normal;
+                    font-size: ${fontSize}px;
+                    src: url("https://fonts.cdnfonts.com/s/57197/times.woff") format('woff');
+              }
+              `;
+                  const style = document.createElement('style');
+                  style.appendChild(document.createTextNode(css));
+                  document.head.appendChild(style);
+                }
+              });
+              updateTheme(rendition, {
+                background,
+                text,
+                fontFamily: 'Times New Roman',
+                fontSize,
+              });
+            }
+          }}
           loadingView={
             <div className='w-full h-full flex flex-col justify-center items-center'>
               <Loader2 className='h-24 w-24 animate-spin' />
@@ -334,6 +363,10 @@ const getStyle = (theme?: string): IReactReaderStyle => {
   const readerTheme: IReactReaderStyle = {
     ...ReactReaderStyle,
     ...(theme === 'dark' ? darkTheme : lightTheme),
+    reader: {
+      ...ReactReaderStyle.reader,
+      fontFamily: 'Verdana',
+    },
   };
   return readerTheme;
 };

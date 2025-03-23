@@ -65,11 +65,7 @@ export default function AddHighlightPopover({
 
   return (
     <Popover
-      trigger={
-        <Tooltip content='Highlight'>
-          <Highlighter />
-        </Tooltip>
-      }
+      trigger={<Highlighter />}
       disabled={disabled}
       withCloseButton={false}
       className='z-50 bg-secondary'

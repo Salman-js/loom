@@ -1,37 +1,64 @@
 import { Button } from '@/components/ui/button';
 import { SidebarMenuSub } from '@/components/ui/sidebar';
+import { useReaderStyle } from '@/features/books/hooks/use-reader-style';
 import { Minus, Plus } from 'lucide-react';
 import { useState } from 'react';
 
 const fontFamilies = [
-  { name: 'Arial', style: 'font-arial' },
-  { name: 'Times New Roman', style: 'font-times' },
-  { name: 'Courier New', style: 'font-courier' },
-  { name: 'Georgia', style: 'font-georgia' },
-  { name: 'Verdana', style: 'font-verdana' },
+  {
+    name: 'Arial',
+    url: `url('https://fonts.cdnfonts.com/s/29107/ARIALMTEXTRABOLD.woff') format('woff')`,
+    style: 'font-arial',
+  },
+  {
+    name: 'Times New Roman',
+    url: `url('https://fonts.cdnfonts.com/s/57197/times.woff') format('woff')`,
+    style: 'font-times',
+  },
+  {
+    name: 'Mechanical',
+    url: `url('https://fonts.cdnfonts.com/s/20938/MechanicalObl.woff') format('woff')`,
+    style: 'font-courier',
+  },
+  {
+    name: 'Georgia',
+    url: `url('https://fonts.cdnfonts.com/s/14416/GeorgiaPro-CondRegular.woff') format('woff')`,
+    style: 'font-georgia',
+  },
+  {
+    name: 'Verdana',
+    url: `url('https://fonts.cdnfonts.com/s/26084/VERDANAI.woff') format('woff')`,
+    style: 'font-verdana',
+  },
 ];
 
 export default function FontSelector() {
+  const { fontFamily, fontSize, setFontFamily, setFontSize } = useReaderStyle();
   const [selectedFont, setSelectedFont] = useState<{
     style: React.CSSProperties['fontFamily'];
     size: number;
   }>({
-    style: fontFamilies[0].style,
-    size: 16,
+    style: fontFamily,
+    size: Number(fontSize || 0) ?? 16,
   });
 
-  const handleFontSelect = (fontStyle: string) => {
+  const handleFontSelect = (style: string, url: string) => {
     setSelectedFont({
       ...selectedFont,
-      style: fontStyle,
+      style: style,
     });
+    setFontFamily(url);
   };
 
   const handleIncreaseFontByOne = () => {
+    const newSize = selectedFont.size + 1;
     setSelectedFont((prevFont) => ({ ...prevFont, size: prevFont.size + 1 }));
+    setFontSize(newSize);
   };
   const handleDecreaseFontByOne = () => {
-    setSelectedFont((prevFont) => ({ ...prevFont, size: prevFont.size - 1 }));
+    const newSize = selectedFont.size - 1;
+    setSelectedFont((prevFont) => ({ ...prevFont, size: prevFont.size + 1 }));
+    setFontSize(newSize);
   };
   return (
     <SidebarMenuSub>
@@ -45,12 +72,14 @@ export default function FontSelector() {
                   ? 'bg-foreground text-background'
                   : 'bg-background text-foreground'
               }`}
-              onClick={() => handleFontSelect(font.style)}
+              onClick={() => handleFontSelect(font.style, font.url)}
             >
               <div style={{ fontFamily: font.style }} className='text-xl'>
                 Aa
               </div>
-              <div className='text-xs'>{font.name}</div>
+              <div className='text-xs' style={{ fontFamily: font.style }}>
+                {font.name}
+              </div>
             </div>
           ))}
         </div>
