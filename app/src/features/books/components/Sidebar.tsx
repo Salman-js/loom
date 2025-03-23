@@ -137,7 +137,7 @@ export function BookSidebar({
                 </div>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
                   <span className='truncate font-semibold'>Loom</span>
-                  <span className='truncate text-xs'>bookshelf</span>
+                  <span className='truncate text-xs'>Library</span>
                 </div>
               </SidebarMenuButton>
             </Link>

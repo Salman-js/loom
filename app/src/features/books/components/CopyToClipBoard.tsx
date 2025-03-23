@@ -32,26 +32,24 @@ const CopyToClipBoard: React.FC<CopyToClipBoardProps> = ({
         });
   }
   return (
-    <Tooltip content='Copy'>
-      <Button
-        size='icon'
-        variant='ghost'
-        onClick={onCopy}
-        className='flex flex-col justify-center items-center'
-        disabled={disabled}
-      >
-        <Copy
-          className={`${
-            copied ? 'scale-0' : 'scale-100'
-          } transition-all duration-300`}
-        />
-        <Check
-          className={`${
-            copied ? 'scale-100' : 'scale-0'
-          } absolute m-auto transition-all duration-300`}
-        />
-      </Button>
-    </Tooltip>
+    <Button
+      size='icon'
+      variant='ghost'
+      onClick={onCopy}
+      className='flex flex-col justify-center items-center'
+      disabled={disabled}
+    >
+      <Copy
+        className={`${
+          copied ? 'scale-0' : 'scale-100'
+        } transition-all duration-300`}
+      />
+      <Check
+        className={`${
+          copied ? 'scale-100' : 'scale-0'
+        } absolute m-auto transition-all duration-300`}
+      />
+    </Button>
   );
 };
 export default CopyToClipBoard;

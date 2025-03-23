@@ -15,6 +15,7 @@ import { ITextSelection } from './reader/reader';
 import { Tooltip } from '@/components/ui/factory/Tooltip';
 import { Rendition } from 'epubjs';
 import { useAddNote, useDeleteNote } from '../api/api.books';
+import { cn } from '@/lib/utils';
 
 type addNoteProps = {
   onAfterSave: (text: string) => void;
@@ -24,6 +25,7 @@ type addNoteProps = {
   rendition: Rendition | undefined;
   bookId: string;
   disabled?: boolean;
+  isFullScreen: boolean;
 };
 export default function AddNotePopover({
   onAfterSave,
@@ -33,6 +35,7 @@ export default function AddNotePopover({
   rendition,
   bookId,
   disabled = false,
+  isFullScreen,
 }: addNoteProps) {
   const hasExistingNote = notes.some(
     (note) => note.cfiRange === currentSelection?.cfiRange
@@ -75,14 +78,13 @@ export default function AddNotePopover({
   }, [currentSelection, notes]);
   return (
     <Popover
-      trigger={
-        <Tooltip content='Add Note'>
-          <Pencil />
-        </Tooltip>
-      }
+      trigger={<Pencil />}
       withCloseButton={false}
       disabled={disabled}
-      className='top-[2.7rem] h-[200px] w-[364px]'
+      className={cn(
+        'top-[2.7rem] h-[200px] w-[364px]',
+        isFullScreen && 'left-[0rem]'
+      )}
     >
       <PopoverCloseButton className='absolute top-2 right-2' />
       <PopoverForm onSubmit={(note) => handleAddNote(note)}>

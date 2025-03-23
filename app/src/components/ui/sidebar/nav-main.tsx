@@ -34,11 +34,11 @@ export function NavMain() {
       icon: SunMoon,
       child: <ThemeSelector />,
     },
-    {
-      title: 'Font',
-      icon: CaseSensitive,
-      child: <FontSelector />,
-    },
+    // {
+    //   title: 'Font',
+    //   icon: CaseSensitive,
+    //   child: <FontSelector />,
+    // },
     {
       title: 'Color',
       icon: Palette,

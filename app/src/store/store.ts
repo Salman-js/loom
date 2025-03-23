@@ -100,7 +100,7 @@ export const readerStyleStore = createStore<
     (set) => ({
       background: '#fafafa',
       text: '#18181b',
-      fontFamily: 'font-arial',
+      fontFamily: `url('https://fonts.cdnfonts.com/s/57197/times.woff') format('woff')`,
       fontSize: 16,
       setColorStyle: ({
         background,
